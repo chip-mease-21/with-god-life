@@ -702,7 +702,7 @@ function entryCard(e){
     ${e.title?`<div class="entry-title">${esc(e.title)}</div>`:""}
     <div class="entry-body">${e.body||""}</div>
     ${e.surrender?`<div class="entry-surrender">${esc(e.surrender)}</div>`:""}
-    <div class="entry-actions"><button class="btn ghost sm" onclick="openEntry('edit','${e.id}')">Open</button></div>
+    <div class="entry-actions"><button class="btn ghost sm" onclick="openEntry('edit','${e.id}')">Open</button><button class="btn ghost sm danger" onclick="deleteEntryById('${e.id}')">Delete</button></div>
   </div></div>`;
 }
 
@@ -808,6 +808,16 @@ function deleteCurrentEntry(){
   state.entries=state.entries.filter(x=>x.id!==id);
   save(); cloudDeleteEntry(id);
   closeEntry(); toast("Entry removed"); renderToday(); if(activeView()==="collection")renderCollection();
+}
+function deleteEntryById(id){
+  const e=state.entries.find(x=>x.id===id);if(!e)return;
+  const label=e.title?'"'+e.title+'"':"this entry";
+  if(!confirm("Delete "+label+"? This can't be undone."))return;
+  state.entries=state.entries.filter(x=>x.id!==id);
+  save(); cloudDeleteEntry(id);
+  toast("Entry deleted");
+  renderToday();
+  const v=activeView(); if(v==="collection")renderCollection(); if(v==="areas")renderAreas();
 }
 
 /* =========================================================
