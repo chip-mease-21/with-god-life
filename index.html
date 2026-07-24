@@ -380,6 +380,7 @@ pre.rules{background:#0f1a33;color:#cfe0ff;font-size:11.5px;line-height:1.5;padd
         <button class="btn" onclick="document.getElementById('importFile').click()">⬆ Import backup</button>
         <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importData(event)">
       </div>
+      <div class="row" style="margin-top:8px"><button class="btn ghost sm" onclick="restorePresync()">↩ Restore pre-sync safety copy</button></div>
       <hr class="divider">
       <div class="field">
         <label class="fld">Your name</label>
@@ -628,7 +629,7 @@ let editingId=null, selectedFamily=null;
 
 function blankState(){
   const areas={}; AREA_DEFS.forEach(a=>{areas[a.key]={vision:a.vision,intention:a.intention,means:a.means};});
-  return {entries:[],areas,settings:{name:"",title:"The With-God Life"},activeArea:"money"};
+  return {entries:[],areas,settings:{name:"",title:"The With-God Life"},activeArea:"money",deletedIds:[]};
 }
 function load(){
   try{
@@ -639,6 +640,7 @@ function load(){
     if(!s.settings) s.settings={name:"",title:"The With-God Life"};
     if(!s.entries) s.entries=[];
     if(!s.activeArea) s.activeArea="money";
+    if(!Array.isArray(s.deletedIds)) s.deletedIds=[];
     return s;
   }catch(e){console.warn("load failed",e);return blankState();}
 }
@@ -812,11 +814,16 @@ function saveEntry(){
   closeEntry(); toast(editingId?"Entry updated":"Captured — grace to you");
   renderToday(); if(activeView()==="collection")renderCollection();
 }
+function tombstone(id){
+  if(!Array.isArray(state.deletedIds))state.deletedIds=[];
+  if(!state.deletedIds.includes(id)){state.deletedIds.push(id);if(state.deletedIds.length>1000)state.deletedIds=state.deletedIds.slice(-1000);}
+  cloudWriteConfig("deleted",state.deletedIds);
+}
 function deleteCurrentEntry(){
   if(!editingId)return;
   const id=editingId;
   state.entries=state.entries.filter(x=>x.id!==id);
-  save(); cloudDeleteEntry(id);
+  tombstone(id); save(); cloudDeleteEntry(id);
   closeEntry(); toast("Entry removed"); renderToday(); if(activeView()==="collection")renderCollection();
 }
 function deleteEntryById(id){
@@ -824,7 +831,7 @@ function deleteEntryById(id){
   const label=e.title?'"'+e.title+'"':"this entry";
   if(!confirm("Delete "+label+"? This can't be undone."))return;
   state.entries=state.entries.filter(x=>x.id!==id);
-  save(); cloudDeleteEntry(id);
+  tombstone(id); save(); cloudDeleteEntry(id);
   toast("Entry deleted");
   renderToday();
   const v=activeView(); if(v==="collection")renderCollection(); if(v==="areas")renderAreas();
@@ -964,6 +971,19 @@ function importData(ev){
     }catch(e){toast("That file isn't a valid backup");}};
   r.readAsText(file);ev.target.value="";
 }
+function restorePresync(){
+  let bk=null;
+  try{bk=JSON.parse(localStorage.getItem("withGodLife_presync")||"null");}catch(e){}
+  if(!bk||!Array.isArray(bk.entries)||!bk.entries.length){toast("No safety copy found on this device");return;}
+  const have=new Set(state.entries.map(e=>e.id));
+  const del=new Set(state.deletedIds||[]);
+  const restore=bk.entries.filter(e=>!have.has(e.id)&&!del.has(e.id));
+  if(!restore.length){toast("Safety copy holds nothing you're missing");return;}
+  if(!confirm("Restore "+restore.length+" entr"+(restore.length===1?"y":"ies")+" from the pre-sync safety copy?"))return;
+  restore.forEach(e=>{state.entries.push(e);cloudWriteEntry(e);});
+  save();toast("Restored "+restore.length+" — synced back up");renderToday();
+  const v=activeView();if(v==="collection")renderCollection();
+}
 function resetAll(){
   if(!confirm("This permanently erases every entry and all your VIM text on THIS device. Export a backup first if you want to keep anything. Continue?"))return;
   if(!confirm("Are you absolutely sure? This cannot be undone."))return;
@@ -1021,8 +1041,10 @@ async function cloudInit(config,silent){
     cloud._auth=fb.auth;
     fb.auth.onAuthStateChanged(auth,async user=>{
       if(user){cloud.uid=user.uid;cloud.email=user.email;setStatus("syncing");
-        try{await cloudInitialMerge();}catch(e){console.warn("merge",e);}
-        cloudAttach(); renderSyncUI();
+        presyncBackup();
+        try{ await cloudInitialMerge(); cloudAttach(); }
+        catch(e){ console.warn("initial sync failed — keeping local data, will retry",e); setStatus("offline"); }
+        renderSyncUI();
       }else{cloud.uid=null;cloud.email=null;detachCloud();setStatus("signedout");renderSyncUI();}
     });
   }catch(e){
@@ -1032,23 +1054,52 @@ async function cloudInit(config,silent){
   }
 }
 function detachCloud(){cloud.unsub.forEach(u=>{try{u();}catch(e){}});cloud.unsub=[];}
+function presyncBackup(){
+  try{
+    if(localStorage.getItem("withGodLife_presync"))return; /* keep the earliest snapshot */
+    if((state.entries||[]).length) localStorage.setItem("withGodLife_presync",JSON.stringify({at:new Date().toISOString(),entries:state.entries,areas:state.areas,settings:state.settings}));
+  }catch(e){}
+}
 async function cloudInitialMerge(){
   const {collection,getDocs,setDoc,doc,getDoc}=cloud.api,db=cloud.db,uid=cloud.uid;
+  /* pull tombstones first so we never re-push something you deleted */
+  try{const dSnap=await getDoc(doc(db,`users/${uid}/config/deleted`));if(dSnap.exists()&&Array.isArray(dSnap.data().data)){state.deletedIds=[...new Set([...(state.deletedIds||[]),...dSnap.data().data])];}}catch(e){}
+  const del=new Set(state.deletedIds||[]);
+  /* this throws if offline / not yet permitted — caller then keeps local data and does NOT attach overwriting listeners */
   const snap=await getDocs(collection(db,`users/${uid}/entries`));
   const cloudIds=new Set();snap.forEach(d=>cloudIds.add(d.id));
-  for(const e of state.entries){if(!cloudIds.has(e.id)){try{await setDoc(doc(db,`users/${uid}/entries/${e.id}`),clean(e));}catch(err){}}}
+  /* push up every local entry the cloud doesn't have (and you didn't delete) — nothing is ever dropped */
+  for(const e of state.entries){if(!cloudIds.has(e.id)&&!del.has(e.id)){await setDoc(doc(db,`users/${uid}/entries/${e.id}`),clean(e));}}
+  try{await setDoc(doc(db,`users/${uid}/config/deleted`),{data:clean(state.deletedIds||[])});}catch(e){}
   try{const aRef=doc(db,`users/${uid}/config/areas`);if(!(await getDoc(aRef)).exists())await setDoc(aRef,{data:clean(state.areas)});}catch(e){}
   try{const sRef=doc(db,`users/${uid}/config/settings`);if(!(await getDoc(sRef)).exists())await setDoc(sRef,{data:clean(state.settings)});}catch(e){}
 }
 function cloudAttach(){
   detachCloud();
+  if(!cloud._delApplied)cloud._delApplied=new Set();
   const {collection,onSnapshot,doc}=cloud.api,db=cloud.db,uid=cloud.uid;
   cloud.unsub.push(onSnapshot(collection(db,`users/${uid}/entries`),snap=>{
-    const arr=[];snap.forEach(d=>arr.push(Object.assign({id:d.id},d.data())));
-    state.entries=arr;save();
+    const cloudArr=[];const cloudIds=new Set();
+    snap.forEach(d=>{cloudArr.push(Object.assign({id:d.id},d.data()));cloudIds.add(d.id);});
+    const del=new Set(state.deletedIds||[]);
+    /* any local entry the cloud is missing (and you didn't delete) → heal it back up, never drop it */
+    const localOnly=(state.entries||[]).filter(e=>!cloudIds.has(e.id)&&!del.has(e.id));
+    localOnly.forEach(e=>{try{cloud.api.setDoc(cloud.api.doc(db,`users/${uid}/entries/${e.id}`),clean(e));}catch(_){}});
+    state.entries=cloudArr.filter(e=>!del.has(e.id)).concat(localOnly);
+    save();
     setStatus(snap.metadata.fromCache?"offline":"synced");
     rerenderActive();
   },err=>{console.warn(err);setStatus("error");}));
+  cloud.unsub.push(onSnapshot(doc(db,`users/${uid}/config/deleted`),d=>{
+    if(d.exists()&&Array.isArray(d.data().data)){
+      state.deletedIds=[...new Set([...(state.deletedIds||[]),...d.data().data])];
+      d.data().data.forEach(id=>{if(!cloud._delApplied.has(id)){cloud._delApplied.add(id);cloudDeleteEntry(id);}});
+      const before=state.entries.length;
+      const del=new Set(state.deletedIds);
+      state.entries=state.entries.filter(e=>!del.has(e.id));
+      if(state.entries.length!==before){save();rerenderActive();}
+    }
+  }));
   cloud.unsub.push(onSnapshot(doc(db,`users/${uid}/config/areas`),d=>{if(d.exists()&&d.data().data){state.areas=d.data().data;save();if(activeView()==="areas")renderAreas();}}));
   cloud.unsub.push(onSnapshot(doc(db,`users/${uid}/config/settings`),d=>{if(d.exists()&&d.data().data){state.settings=d.data().data;save();applyTitle();loadSettingsUI();}}));
 }
@@ -1074,6 +1125,7 @@ async function cloudWipe(){
     const batch=writeBatch(db);snap.forEach(d=>batch.delete(d.ref));await batch.commit();
     await deleteDoc(doc(db,`users/${uid}/config/areas`)).catch(()=>{});
     await deleteDoc(doc(db,`users/${uid}/config/settings`)).catch(()=>{});
+    await deleteDoc(doc(db,`users/${uid}/config/deleted`)).catch(()=>{});
   }catch(e){console.warn(e);}
 }
 
