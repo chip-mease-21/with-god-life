@@ -958,16 +958,20 @@ function exportData(){
 function importData(ev){
   const file=ev.target.files[0];if(!file)return;const r=new FileReader();
   r.onload=()=>{try{
-      const imp=JSON.parse(r.result);if(!imp.entries)throw new Error("bad");
-      if(confirm("Import this backup? It replaces the journal on this device (and syncs the result if connected). Export first if unsure.")){
-        state=imp;
-        if(!state.settings)state.settings={name:"",title:"The With-God Life"};
-        if(!state.areas)state.areas=blankState().areas;
-        if(!state.activeArea)state.activeArea="money";
-        save();loadSettingsUI();initCollectionFilters();renderCollection();renderToday();
-        cloudPushAll();
-        toast("Journal imported ("+state.entries.length+" entries)");
-      }
+      const imp=JSON.parse(r.result);if(!Array.isArray(imp.entries))throw new Error("bad");
+      const have=new Set(state.entries.map(e=>e.id));
+      const del=new Set(state.deletedIds||[]);
+      const incoming=imp.entries.filter(e=>e&&e.id&&!have.has(e.id)&&!del.has(e.id));
+      const emptyNow=state.entries.length===0;
+      const msg=emptyNow
+        ? "Import "+imp.entries.length+" entr"+(imp.entries.length===1?"y":"ies")+" from this backup?"
+        : "Merge "+incoming.length+" new entr"+(incoming.length===1?"y":"ies")+" into your journal? Your current entries and settings are kept.";
+      if(!confirm(msg))return;
+      incoming.forEach(e=>{state.entries.push(e);cloudWriteEntry(e);});
+      if(emptyNow && imp.areas){state.areas=imp.areas;cloudWriteConfig("areas",state.areas);}
+      if(emptyNow && imp.settings){state.settings=imp.settings;cloudWriteConfig("settings",state.settings);}
+      save();loadSettingsUI();initCollectionFilters();renderCollection();renderToday();
+      toast(incoming.length?("Merged "+incoming.length+" entr"+(incoming.length===1?"y":"ies")+" — synced"):"Nothing new to import");
     }catch(e){toast("That file isn't a valid backup");}};
   r.readAsText(file);ev.target.value="";
 }
