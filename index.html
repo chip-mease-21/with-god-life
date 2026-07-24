@@ -367,7 +367,7 @@ pre.rules{background:#0f1a33;color:#cfe0ff;font-size:11.5px;line-height:1.5;padd
         <h3 style="margin:0;font-size:17px">Sync across your devices</h3>
         <div class="sync-state"><span class="sdot" id="sdot"></span><span id="syncStateText">Local only</span></div>
       </div>
-      <p class="help" id="syncHelp" style="margin:4px 0 12px">Your journal lives privately on this device. Connect Firebase once to sync it in real time between your phone and desktop.</p>
+      <p class="help" id="syncHelp" style="margin:4px 0 12px">Real-time sync is built in. Sign in once on each device and your journal stays in sync automatically between your phone and desktop — no buttons to press.</p>
       <div id="syncBody"></div>
     </div>
 
@@ -613,6 +613,16 @@ const QUOTES=[
    ========================================================= */
 const LS_KEY="withGodLife_v1";
 const FB_KEY="withGodLife_fbcfg";
+/* Firebase config baked in — the app auto-connects on load. This is a public
+   client config (safe to ship); your journal is protected by sign-in + rules. */
+const BAKED_FB_CONFIG={
+  apiKey:"AIzaSyA4-cqv7g6S4IUunVe4F3BbTaUjVTojhaw",
+  authDomain:"with-god-2b4f9.firebaseapp.com",
+  projectId:"with-god-2b4f9",
+  storageBucket:"with-god-2b4f9.firebasestorage.app",
+  messagingSenderId:"1079121989016",
+  appId:"1:1079121989016:web:d435cd4887f1425b512fed"
+};
 let state=load();
 let editingId=null, selectedFamily=null;
 
@@ -969,7 +979,11 @@ function resetAll(){
 const cloud={enabled:false,ready:false,uid:null,email:null,status:"local",db:null,auth:null,api:null,unsub:[]};
 function cloudActive(){return cloud.enabled&&cloud.ready&&cloud.uid;}
 
-function getFbConfig(){try{const r=localStorage.getItem(FB_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function getFbConfig(){
+  if(BAKED_FB_CONFIG&&BAKED_FB_CONFIG.apiKey)return BAKED_FB_CONFIG;
+  try{const r=localStorage.getItem(FB_KEY);return r?JSON.parse(r):null;}catch(e){return null;}
+}
+function isBaked(){return !!(BAKED_FB_CONFIG&&BAKED_FB_CONFIG.apiKey);}
 function parseConfig(text){
   text=(text||"").trim(); if(!text)return null;
   try{return JSON.parse(text);}catch(e){}
@@ -1075,6 +1089,7 @@ service cloud.firestore {
 function renderSyncUI(){
   const body=document.getElementById("syncBody");if(!body)return;
   const cfg=getFbConfig();
+  const baked=isBaked();
   const guide=`<details class="guide"><summary>First-time setup — how to get your Firebase keys</summary>
     <ol>
       <li>Go to <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a> and create a free project.</li>
@@ -1084,7 +1099,6 @@ function renderSyncUI(){
       <li>In Firestore <b>Rules</b>, paste the rules below and Publish:</li>
     </ol>
     <pre class="rules">${esc(RULES)}</pre>
-    <p class="help" style="padding:0 0 8px">Then paste your config above and create an account with the same email/password on each device.</p>
   </details>`;
 
   if(!cfg){
@@ -1097,21 +1111,20 @@ function renderSyncUI(){
   }
   if(!cloud.uid){
     body.innerHTML=`
-      <p class="help" style="margin-top:0">Project <code>${esc(cfg.projectId||"connected")}</code> connected. Sign in with the same account on every device to sync.</p>
+      <p class="help" style="margin-top:0">Sync is built in. Sign in once on this device — after that it stays in sync automatically, with nothing to click. Use the <b>same email &amp; password</b> on your phone and desktop.</p>
       <div class="two-col">
         <div class="field"><label class="fld">Email</label><input type="email" id="fbEmail" autocomplete="username" placeholder="you@email.com"></div>
-        <div class="field"><label class="fld">Password</label><input type="password" id="fbPass" autocomplete="current-password" placeholder="••••••••"></div>
+        <div class="field"><label class="fld">Password</label><input type="password" id="fbPass" autocomplete="current-password" placeholder="at least 6 characters"></div>
       </div>
       <div class="row"><button class="btn primary" onclick="onSignIn()">Sign in</button>
-        <button class="btn" onclick="onSignUp()">Create account</button>
-        <button class="btn ghost sm" onclick="onDisconnect()">Disconnect project</button></div>
-      ${guide}`;
+        <button class="btn" onclick="onSignUp()">Create account</button></div>
+      <p class="help" style="margin-top:10px">First time? Tap <b>Create account</b> to set your password. On your other devices, tap <b>Sign in</b> with the same details.</p>
+      ${baked?"":guide}`;
     return;
   }
   body.innerHTML=`
-    <p class="help" style="margin-top:0">Syncing in real time as <b>${esc(cloud.email||"")}</b>. New entries appear on your other devices within a second.</p>
-    <div class="row"><button class="btn" onclick="onSignOut()">Sign out (this device)</button>
-      <button class="btn ghost sm danger" onclick="onDisconnect()">Disconnect project</button></div>`;
+    <p class="help" style="margin-top:0">✓ Syncing in real time as <b>${esc(cloud.email||"")}</b>. New entries appear on your other devices within a second — automatically.</p>
+    <div class="row"><button class="btn" onclick="onSignOut()">Sign out (this device)</button></div>`;
 }
 async function onConnectConfig(){
   const cfg=parseConfig(document.getElementById("fbConfigInput").value);
