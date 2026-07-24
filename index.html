@@ -1015,6 +1015,7 @@ async function cloudInit(config,silent){
     catch(e){ db=fb.fs.getFirestore(app); }
     const auth=fb.auth.getAuth(app);
     try{ await fb.auth.setPersistence(auth,fb.auth.browserLocalPersistence); }catch(e){}
+    try{ await fb.auth.getRedirectResult(auth); }catch(e){} /* completes Google redirect sign-in on mobile */
     cloud.db=db; cloud.auth=auth; cloud.ready=true;
     cloud.api={setDoc:fb.fs.setDoc,doc:fb.fs.doc,deleteDoc:fb.fs.deleteDoc,collection:fb.fs.collection,onSnapshot:fb.fs.onSnapshot,getDocs:fb.fs.getDocs,getDoc:fb.fs.getDoc,writeBatch:fb.fs.writeBatch};
     cloud._auth=fb.auth;
@@ -1110,15 +1111,18 @@ function renderSyncUI(){
     return;
   }
   if(!cloud.uid){
+    const gIcon=`<svg width="18" height="18" viewBox="0 0 48 48" style="flex:none"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>`;
     body.innerHTML=`
-      <p class="help" style="margin-top:0">Sync is built in. Sign in once on this device — after that it stays in sync automatically, with nothing to click. Use the <b>same email &amp; password</b> on your phone and desktop.</p>
-      <div class="two-col">
-        <div class="field"><label class="fld">Email</label><input type="email" id="fbEmail" autocomplete="username" placeholder="you@email.com"></div>
-        <div class="field"><label class="fld">Password</label><input type="password" id="fbPass" autocomplete="current-password" placeholder="at least 6 characters"></div>
-      </div>
-      <div class="row"><button class="btn primary" onclick="onSignIn()">Sign in</button>
-        <button class="btn" onclick="onSignUp()">Create account</button></div>
-      <p class="help" style="margin-top:10px">First time? Tap <b>Create account</b> to set your password. On your other devices, tap <b>Sign in</b> with the same details.</p>
+      <p class="help" style="margin-top:0">Sync is built in. Sign in once on this device — after that it stays in sync automatically, with nothing to press. Use the <b>same account</b> on your phone and desktop.</p>
+      <button class="btn block" style="background:#fff;border:1px solid var(--line);font-weight:600;gap:10px" onclick="onGoogleSignIn()">${gIcon} Continue with Google</button>
+      <details class="guide" style="margin-top:12px"><summary>Prefer email &amp; password instead?</summary>
+        <div class="two-col" style="margin-top:8px">
+          <div class="field"><label class="fld">Email</label><input type="email" id="fbEmail" autocomplete="username" placeholder="you@email.com"></div>
+          <div class="field"><label class="fld">Password</label><input type="password" id="fbPass" autocomplete="current-password" placeholder="at least 6 characters"></div>
+        </div>
+        <div class="row"><button class="btn primary sm" onclick="onSignIn()">Sign in</button>
+          <button class="btn sm" onclick="onSignUp()">Create account</button></div>
+      </details>
       ${baked?"":guide}`;
     return;
   }
@@ -1131,6 +1135,21 @@ async function onConnectConfig(){
   if(!cfg||!cfg.apiKey||!cfg.projectId){toast("That doesn't look like a Firebase config");return;}
   localStorage.setItem(FB_KEY,JSON.stringify(cfg));
   await cloudInit(cfg); renderSyncUI(); toast("Connected — now sign in");
+}
+async function onGoogleSignIn(){
+  if(!cloud.ready||!cloud._auth){toast("Still connecting — try again in a moment");return;}
+  setStatus("connecting");
+  try{
+    const provider=new cloud._auth.GoogleAuthProvider();
+    await cloud._auth.signInWithPopup(cloud.auth,provider);
+    toast("Signed in with Google — syncing");
+  }catch(e){
+    const c=(e&&e.code)||"";
+    if(c.includes("popup")||c.includes("cancelled")||c.includes("operation-not-supported")){
+      try{ await cloud._auth.signInWithRedirect(cloud.auth,new cloud._auth.GoogleAuthProvider()); return; }catch(e2){}
+    }
+    setStatus("signedout"); toast(authMsg(e));
+  }
 }
 async function onSignIn(){
   const email=document.getElementById("fbEmail").value.trim(),pass=document.getElementById("fbPass").value;
@@ -1151,6 +1170,10 @@ function onDisconnect(){
   localStorage.removeItem(FB_KEY);cloud.enabled=false;cloud.ready=false;cloud.uid=null;setStatus("local");renderSyncUI();
 }
 function authMsg(e){const c=(e&&e.code)||"";
+  if(c.includes("unauthorized-domain"))return "Add this site to Firebase → Authentication → Authorized domains";
+  if(c.includes("operation-not-allowed"))return "Enable Google (or Email) sign-in in the Firebase console first";
+  if(c.includes("popup-closed")||c.includes("cancelled"))return "Sign-in was cancelled";
+  if(c.includes("account-exists"))return "That email is already linked to another sign-in method";
   if(c.includes("invalid-credential")||c.includes("wrong-password"))return "Wrong email or password";
   if(c.includes("email-already-in-use"))return "That account exists — try Sign in";
   if(c.includes("invalid-email"))return "That email doesn't look right";
