@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#eef3fb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>The With-God Life — A Formation Journal</title>
+<style>
+:root{
+  --bg:#eef3fb;            /* cool paper */
+  --bg-2:#e2eaf6;
+  --card:#ffffff;
+  --card-2:#f7fafe;
+  --ink:#1b2437;          /* deep slate */
+  --ink-soft:#55617c;
+  --ink-faint:#8b96ad;
+  --line:#dbe4f1;
+  --line-soft:#e9eff8;
+  --accent:#3b6ef6;       /* cobalt */
+  --accent-deep:#2453d6;
+  --accent-ink:#1c3aa8;
+  --teal:#0ea5a4;
+  --violet:#7c5cff;
+  --gold:#f5a524;
+  --love:#e5486d;
+  --joy:#f5a524;
+  --peace:#0ea5a4;
+  --faith:#22b07d;
+  --hope:#7c5cff;
+  --shadow:0 1px 2px rgba(27,36,55,.05),0 10px 30px rgba(35,60,120,.08);
+  --shadow-lg:0 12px 40px rgba(35,60,120,.18);
+  --radius:16px;
+  --grad:linear-gradient(120deg,#3b6ef6,#7c5cff);
+  --grad-teal:linear-gradient(120deg,#0ea5a4,#3b6ef6);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--sans);
+  background:
+    radial-gradient(1200px 600px at 100% -10%,rgba(124,92,255,.10),transparent 60%),
+    radial-gradient(1000px 500px at -10% 0%,rgba(14,165,164,.10),transparent 55%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--ink);
+  line-height:1.6;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:88px;
+}
+h1,h2,h3,.serif{font-family:var(--serif)}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--accent-deep)}
+::selection{background:#cfe0fb}
+
+/* ---------- Header ---------- */
+.appbar{
+  position:sticky;top:0;z-index:40;
+  background:linear-gradient(180deg,rgba(238,243,251,.96),rgba(238,243,251,.86));
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+  padding:calc(env(safe-area-inset-top) + 14px) 18px 12px;
+}
+.appbar-row{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:820px;margin:0 auto}
+.brand{display:flex;flex-direction:column;gap:1px;min-width:0}
+.brand .title{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.2px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand .sub{font-size:11.5px;color:var(--ink-faint);letter-spacing:.14em;text-transform:uppercase}
+.appbar .right{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.appbar .date{font-size:12.5px;color:var(--ink-soft);white-space:nowrap}
+#syncBadge{font-size:10.5px;font-weight:700;letter-spacing:.04em;border:1px solid var(--line);border-radius:20px;padding:2px 9px;color:var(--ink-faint);background:var(--card);white-space:nowrap;cursor:pointer;transition:.15s}
+
+/* ---------- Layout ---------- */
+.wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+.view{display:none;animation:fade .4s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.section-head{margin:4px 0 4px}
+.section-head h2{font-size:26px;margin:0 0 4px;color:var(--accent-ink);font-weight:600;letter-spacing:.2px}
+.section-head p{margin:0 0 18px;color:var(--ink-soft);font-size:15px;max-width:60ch}
+
+.card{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:18px;margin-bottom:16px;
+}
+.card.tight{padding:14px 16px}
+.muted{color:var(--ink-soft)}
+.faint{color:var(--ink-faint)}
+.center{text-align:center}
+.divider{height:1px;background:var(--line-soft);margin:16px 0;border:0}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);
+  padding:11px 16px;border-radius:12px;font-size:14.5px;font-weight:500;
+  transition:.18s;line-height:1.2;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent-deep)}
+.btn.primary{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 6px 16px rgba(59,110,246,.28)}
+.btn.primary:hover{filter:brightness(1.05);color:#fff}
+.btn.teal{background:var(--grad-teal);color:#fff;border-color:transparent}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--ink-soft)}
+.btn.ghost:hover{background:var(--bg-2)}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:10px}
+.btn.block{width:100%}
+.btn.danger{color:var(--love)}
+.btn.danger:hover{border-color:var(--love);color:var(--love)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row.between{justify-content:space-between;align-items:center}
+
+/* ---------- Forms ---------- */
+label.fld{display:block;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 6px;font-weight:700}
+input[type=text],input[type=email],input[type=password],select,textarea{
+  width:100%;font-family:inherit;font-size:15.5px;color:var(--ink);
+  background:var(--card-2);border:1px solid var(--line);border-radius:11px;
+  padding:11px 13px;transition:.15s;
+}
+input:focus,select:focus,textarea:focus,.editor:focus{
+  outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,110,246,.15)
+}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2355617c' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+textarea{resize:vertical}
+.field{margin-bottom:14px}
+
+/* ---------- Rich editor ---------- */
+.toolbar{display:flex;gap:2px;flex-wrap:wrap;background:var(--bg-2);border:1px solid var(--line);border-bottom:none;border-radius:11px 11px 0 0;padding:5px 6px}
+.toolbar button{border:none;background:transparent;color:var(--ink-soft);width:34px;height:32px;border-radius:8px;font-size:15px;display:inline-flex;align-items:center;justify-content:center}
+.toolbar button:hover{background:#fff;color:var(--accent-deep)}
+.toolbar .sep{width:1px;background:var(--line);margin:4px 3px}
+.editor{
+  min-height:120px;background:var(--card-2);border:1px solid var(--line);border-radius:0 0 11px 11px;
+  padding:13px 14px;font-size:16px;line-height:1.7;color:var(--ink);overflow-wrap:break-word;
+}
+.editor:empty:before{content:attr(data-ph);color:var(--ink-faint)}
+.editor.solo{border-radius:11px}
+.editor h3{margin:.4em 0 .2em}
+.editor blockquote{margin:.5em 0;padding-left:14px;border-left:3px solid var(--teal);color:var(--ink-soft);font-style:italic}
+.editor ul,.editor ol{padding-left:22px;margin:.4em 0}
+
+/* ---------- Emotions processor ---------- */
+.family-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.fam-chip{
+  border:1px solid var(--line);background:var(--card-2);border-radius:12px;padding:11px 12px;text-align:left;
+  transition:.15s;display:flex;flex-direction:column;gap:2px
+}
+.fam-chip:hover{border-color:var(--accent)}
+.fam-chip.sel{border-color:var(--kc,var(--accent));background:var(--kbg,#fff);box-shadow:0 0 0 2px var(--kc,var(--accent)) inset}
+.fam-chip .fl{font-weight:600;font-size:14.5px}
+.fam-chip .fr{font-size:11.5px;color:var(--ink-faint)}
+.kingdom-card{border-radius:14px;padding:16px;margin-top:14px;border:1px solid var(--line);background:var(--card);position:relative;overflow:hidden}
+.kingdom-card .kk{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.kingdom-card .kname{font-family:var(--serif);font-size:22px;font-weight:600}
+.kingdom-card .kdef{font-size:13.5px;color:var(--ink-soft)}
+.kaccent{height:4px;border-radius:4px;width:46px;margin-bottom:10px}
+.truth{font-family:var(--serif);font-size:17px;line-height:1.5;font-style:italic;margin:12px 0;padding:12px 14px;background:var(--bg-2);border-radius:11px;border-left:3px solid var(--kc,var(--teal))}
+.mini-h{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:12px 0 5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12.5px;background:var(--bg-2);border:1px solid var(--line);border-radius:20px;padding:4px 10px;color:var(--ink-soft)}
+.scr{color:var(--accent-deep);font-weight:600}
+.verse{cursor:pointer;transition:.15s}
+.chip.verse:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.lit-scr .verse{display:inline-block;border:1px solid var(--line);background:var(--bg-2);border-radius:20px;padding:3px 11px;margin:2px 5px 2px 0;color:var(--accent-deep);font-weight:600;font-size:13px}
+.lit-scr .verse:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.verse-text{font-family:var(--serif);font-size:17px;line-height:1.7;color:var(--ink)}
+.verse-text p{margin:.5em 0}
+.verse-ref{font-family:var(--serif);font-size:20px;color:var(--accent-ink);font-weight:600}
+.verse-foot{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-faint)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.two-col{grid-template-columns:1fr}}
+.sub-wrap{margin-top:12px;display:none}
+.sub-wrap.show{display:block}
+
+/* ---------- Timeline ---------- */
+.timeline{position:relative;margin-top:8px}
+.tl-entry{position:relative;padding:0 0 4px 0;margin-bottom:14px}
+.entry-card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:15px 16px}
+.entry-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:7px}
+.time-badge{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;font-weight:700}
+.tag{font-size:11px;letter-spacing:.03em;padding:2px 9px;border-radius:20px;background:var(--bg-2);color:var(--ink-soft);border:1px solid var(--line)}
+.tag.kingdom{color:#fff;border:none}
+.entry-title{font-family:var(--serif);font-size:17px;font-weight:600;margin:0 0 3px}
+.entry-body{font-size:15px;color:var(--ink)}
+.entry-body p{margin:.35em 0}
+.entry-surrender{margin-top:9px;font-size:14px;color:var(--ink-soft);font-style:italic;padding-left:12px;border-left:3px solid var(--teal)}
+.entry-actions{display:flex;gap:4px;margin-top:10px}
+.empty{text-align:center;padding:40px 16px;color:var(--ink-faint)}
+.empty .big{font-size:34px;margin-bottom:8px;opacity:.55}
+
+/* ---------- Areas ---------- */
+.area-tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;margin-bottom:6px;scrollbar-width:none}
+.area-tabs::-webkit-scrollbar{display:none}
+.area-tab{white-space:nowrap;border:1px solid var(--line);background:var(--card);border-radius:20px;padding:8px 15px;font-size:14px;color:var(--ink-soft);font-weight:500}
+.area-tab.active{background:var(--grad);color:#fff;border-color:transparent}
+.vim-block{margin-bottom:14px}
+.vim-label{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-size:16px;font-weight:600;color:var(--accent-ink);margin-bottom:2px}
+.vim-label .v{width:22px;height:22px;border-radius:50%;background:var(--grad-teal);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--sans)}
+.vim-label .hint{font-family:var(--sans);font-size:11.5px;color:var(--ink-faint);font-weight:400}
+
+/* ---------- Liturgy ---------- */
+.lit-card{cursor:pointer}
+.lit-card .lt{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--accent-ink)}
+.lit-card .ld{font-size:13.5px;color:var(--ink-soft);margin-top:2px}
+.lit-body{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)}
+.lit-body.show{display:block;animation:fade .3s}
+.lit-text{font-family:var(--serif);font-size:16.5px;line-height:1.75}
+.lit-text .resp{color:var(--accent-deep);font-style:italic}
+.lit-text p{margin:.55em 0}
+.breath{background:var(--bg-2);border-radius:11px;padding:11px 14px;margin-top:12px;font-size:14.5px}
+.breath b{color:var(--accent-deep)}
+.lit-scr{margin-top:10px;font-size:13.5px;color:var(--ink-faint)}
+
+/* ---------- Collection ---------- */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.filter-bar select,.filter-bar input{flex:1;min-width:120px}
+.day-group{margin-bottom:8px}
+.day-head{font-family:var(--serif);font-size:15px;color:var(--ink-soft);font-weight:600;margin:18px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--line-soft)}
+
+/* ---------- Sync card ---------- */
+.sync-card{border:1px solid var(--line);background:linear-gradient(180deg,var(--card),var(--card-2))}
+.sync-state{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600}
+.sdot{width:10px;height:10px;border-radius:50%;background:var(--ink-faint);box-shadow:0 0 0 3px rgba(0,0,0,.04)}
+.help{font-size:13px;color:var(--ink-soft)}
+.help code{background:var(--bg-2);padding:1px 6px;border-radius:6px;font-size:12px}
+details.guide{margin-top:10px;border:1px solid var(--line);border-radius:11px;background:var(--card-2);padding:6px 12px}
+details.guide summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--accent-deep);padding:6px 0}
+details.guide ol{margin:6px 0 10px;padding-left:20px;font-size:13.5px;color:var(--ink-soft)}
+details.guide li{margin:6px 0}
+pre.rules{background:#0f1a33;color:#cfe0ff;font-size:11.5px;line-height:1.5;padding:12px;border-radius:10px;overflow-x:auto;white-space:pre;margin:8px 0}
+
+/* ---------- Bottom nav ---------- */
+.bottomnav{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(247,250,254,.98));
+  backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  padding:6px 6px calc(env(safe-area-inset-bottom) + 6px);
+  display:flex;justify-content:space-around;
+}
+.nav-btn{border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 4px;color:var(--ink-faint);flex:1;border-radius:12px;transition:.15s}
+.nav-btn .ic{width:23px;height:23px}
+.nav-btn .lb{font-size:10.5px;letter-spacing:.02em;font-weight:600}
+.nav-btn.active{color:var(--accent-deep)}
+.nav-btn.active .ic{stroke:var(--accent-deep)}
+.nav-btn:active{transform:scale(.94)}
+
+/* ---------- Modal ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(20,30,55,.36);backdrop-filter:blur(3px);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;border-radius:22px 22px 0 0;box-shadow:var(--shadow-lg);animation:slideup .32s cubic-bezier(.2,.7,.3,1);padding:8px 16px calc(env(safe-area-inset-bottom) + 20px)}
+@keyframes slideup{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
+@media(min-width:641px){.modal-bg{align-items:center}.modal{border-radius:22px;max-height:88vh}}
+.modal-grip{width:38px;height:4px;background:var(--line);border-radius:4px;margin:8px auto 12px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.modal-head h3{margin:0;font-size:20px;color:var(--accent-ink)}
+.x{border:none;background:var(--bg-2);width:34px;height:34px;border-radius:50%;font-size:18px;color:var(--ink-soft);display:flex;align-items:center;justify-content:center}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:30px;font-size:14px;z-index:200;opacity:0;transition:.3s;box-shadow:var(--shadow-lg);pointer-events:none;max-width:88vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.pill-legend{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.leg{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-soft)}
+.dot{width:9px;height:9px;border-radius:50%}
+
+.fab{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom) + 78px);z-index:45;background:var(--grad);color:#fff;border:none;width:58px;height:58px;border-radius:50%;box-shadow:0 8px 22px rgba(59,110,246,.4);font-size:26px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.fab:active{transform:scale(.92)}
+
+.quote-open{font-family:var(--serif);font-size:15.5px;color:var(--ink-soft);font-style:italic;text-align:center;max-width:52ch;margin:2px auto 20px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="appbar-row">
+    <div class="brand">
+      <span class="title" id="appTitle">The With-God Life</span>
+      <span class="sub">A Formation Journal</span>
+    </div>
+    <div class="right">
+      <div class="date" id="topDate"></div>
+      <div id="syncBadge" onclick="go('collection');setTimeout(()=>document.getElementById('syncCard').scrollIntoView({behavior:'smooth'}),300)">Local only</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ TODAY ============ -->
+  <section class="view active" id="view-today">
+    <div class="section-head">
+      <h2 id="todayGreeting">Today</h2>
+      <p id="todaySub">Capture each moment as it comes. Notice what you feel, name it honestly, and let God meet you there.</p>
+    </div>
+    <div class="quote-open" id="dailyQuote"></div>
+    <div class="row" style="margin-bottom:18px">
+      <button class="btn primary" onclick="openEntry('today')">+ Capture a moment</button>
+      <button class="btn" onclick="go('liturgies')">Pray first</button>
+    </div>
+    <div id="todayTimeline"></div>
+  </section>
+
+  <!-- ============ AREAS ============ -->
+  <section class="view" id="view-areas">
+    <div class="section-head">
+      <h2>Areas of Life</h2>
+      <p>Five arenas where your life with God is formed. For each, define your <b>V</b>ision, <b>I</b>ntention, and <b>M</b>eans — then pray and journal.</p>
+    </div>
+    <div class="area-tabs" id="areaTabs"></div>
+    <div id="areaPanel"></div>
+  </section>
+
+  <!-- ============ LITURGIES ============ -->
+  <section class="view" id="view-liturgies">
+    <div class="section-head">
+      <h2>Prayers &amp; Liturgies</h2>
+      <p>A short prayer for the thresholds of your day — before you cross into a meeting, a conversation, deep work, or rest. Tap one to open it.</p>
+    </div>
+    <div id="liturgyList"></div>
+  </section>
+
+  <!-- ============ EMOTIONS ============ -->
+  <section class="view" id="view-emotions">
+    <div class="section-head">
+      <h2>Replacement Strategy</h2>
+      <p>You cannot manage dozens of emotions directly — but you can cultivate five ruling affections. Name the negative feeling honestly, then immerse yourself in the truer reality until it becomes believable, then embodied.</p>
+    </div>
+    <div class="card tight">
+      <div class="pill-legend">
+        <span class="leg"><span class="dot" style="background:var(--love)"></span>Love</span>
+        <span class="leg"><span class="dot" style="background:var(--joy)"></span>Joy</span>
+        <span class="leg"><span class="dot" style="background:var(--peace)"></span>Peace</span>
+        <span class="leg"><span class="dot" style="background:var(--faith)"></span>Faith</span>
+        <span class="leg"><span class="dot" style="background:var(--hope)"></span>Hope</span>
+      </div>
+    </div>
+    <div id="kingdomReference"></div>
+  </section>
+
+  <!-- ============ COLLECTION ============ -->
+  <section class="view" id="view-collection">
+    <div class="section-head">
+      <h2>The Collection</h2>
+      <p>Every entry, gathered in one place — a record of what God has been doing. Review it often; this is where the Examen lives.</p>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="searchBox" placeholder="Search entries…" oninput="renderCollection()">
+      <select id="filterArea" onchange="renderCollection()"></select>
+      <select id="filterKingdom" onchange="renderCollection()">
+        <option value="">All feelings</option>
+        <option value="love">Love</option><option value="joy">Joy</option>
+        <option value="peace">Peace</option><option value="faith">Faith</option><option value="hope">Hope</option>
+      </select>
+    </div>
+    <div id="collectionStats" class="muted" style="font-size:13px;margin-bottom:10px"></div>
+    <div id="collectionList"></div>
+
+    <hr class="divider" style="margin-top:30px">
+
+    <!-- SYNC -->
+    <div class="card sync-card" id="syncCard">
+      <div class="row between" style="margin-bottom:4px">
+        <h3 style="margin:0;font-size:17px">Sync across your devices</h3>
+        <div class="sync-state"><span class="sdot" id="sdot"></span><span id="syncStateText">Local only</span></div>
+      </div>
+      <p class="help" id="syncHelp" style="margin:4px 0 12px">Your journal lives privately on this device. Connect Firebase once to sync it in real time between your phone and desktop.</p>
+      <div id="syncBody"></div>
+    </div>
+
+    <!-- BACKUP + SETTINGS -->
+    <div class="card">
+      <h3 style="margin:0 0 6px;font-size:17px">Backup &amp; personalize</h3>
+      <p class="muted" style="font-size:14px;margin:0 0 14px">Export a copy of your journal any time, or move it between devices manually.</p>
+      <div class="row">
+        <button class="btn" onclick="exportData()">⬇ Export backup</button>
+        <button class="btn" onclick="document.getElementById('importFile').click()">⬆ Import backup</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importData(event)">
+      </div>
+      <hr class="divider">
+      <div class="field">
+        <label class="fld">Your name</label>
+        <input type="text" id="userName" placeholder="e.g. Chip" onchange="saveSettings()">
+      </div>
+      <div class="field">
+        <label class="fld">Journal title</label>
+        <input type="text" id="titleInput" placeholder="The With-God Life" onchange="saveSettings()">
+      </div>
+      <button class="btn ghost danger sm" onclick="resetAll()">Erase everything on this device</button>
+    </div>
+  </section>
+
+</div>
+
+<button class="fab" id="fab" onclick="openEntry('today')" title="Capture a moment">+</button>
+<nav class="bottomnav" id="bottomnav"></nav>
+
+<!-- Entry modal -->
+<div class="modal-bg" id="entryModal">
+  <div class="modal">
+    <div class="modal-grip"></div>
+    <div class="modal-head">
+      <h3 id="entryModalTitle">Capture a moment</h3>
+      <button class="x" onclick="closeEntry()">×</button>
+    </div>
+    <div class="field">
+      <label class="fld">Title — what happened?</label>
+      <input type="text" id="e_title" placeholder="A word or line to remember it by">
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label class="fld">Setting</label>
+        <select id="e_setting"></select>
+      </div>
+      <div class="field">
+        <label class="fld">Area of life</label>
+        <select id="e_area"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label class="fld">What's happening in you?</label>
+      <div class="toolbar" id="e_toolbar"></div>
+      <div class="editor" id="e_body" contenteditable="true" data-ph="Write freely. What happened, what you noticed, what you're carrying…"></div>
+    </div>
+    <div class="field">
+      <label class="fld">Process the emotion</label>
+      <p class="muted" style="font-size:13px;margin:-2px 0 8px">Name the dominant negative feeling. You'll be shown the Kingdom feeling that replaces it and the truth to rest in.</p>
+      <div class="family-grid" id="e_families"></div>
+      <div class="sub-wrap" id="e_subwrap">
+        <label class="fld" style="margin-top:12px">Be specific (optional)</label>
+        <select id="e_sub"></select>
+      </div>
+      <div id="e_kingdom"></div>
+    </div>
+    <div class="field">
+      <label class="fld">Surrender &amp; replace</label>
+      <textarea id="e_surrender" rows="2" placeholder="Lord, I give you this… and I receive instead…"></textarea>
+    </div>
+    <div class="row between" style="margin-top:6px">
+      <button class="btn ghost danger sm" id="e_delete" style="display:none" onclick="deleteCurrentEntry()">Delete</button>
+      <div class="row" style="margin-left:auto">
+        <button class="btn" onclick="closeEntry()">Cancel</button>
+        <button class="btn primary" onclick="saveEntry()">Save entry</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Verse modal -->
+<div class="modal-bg" id="verseModal">
+  <div class="modal">
+    <div class="modal-grip"></div>
+    <div class="modal-head">
+      <span class="verse-ref" id="verseRef">Verse</span>
+      <button class="x" onclick="closeVerse()">×</button>
+    </div>
+    <div class="verse-text" id="verseText"></div>
+    <div class="verse-foot">
+      <span id="verseTrans"></span>
+      <a class="btn sm" id="verseLink" target="_blank" rel="noopener">Read the full passage ↗</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   THE WITH-GOD LIFE — a Dallas Willard–shaped formation journal
+   Local-first (localStorage) + optional Firebase real-time sync.
+   ========================================================= */
+
+/* ---------- The five Kingdom feelings ---------- */
+const KINGDOM = {
+  love:{name:"Love",color:"var(--love)",hex:"#e5486d",bg:"#fdeef2",def:"Engaging the will for what is good for others.",
+    replaces:"anger · resentment · contempt · self-protection",
+    is:["An orientation of the will, not a passing emotion","Confidence that my worth is not at risk","Kindness without calculation","Loving from being loved by God, not to earn it"],
+    isNot:["An emotion I wait to feel","Avoiding conflict at the expense of truth","Niceness used to keep the peace"],
+    scripture:["1 Corinthians 13","Matthew 5–7","John 13–17"],
+    practices:["Acknowledge another's humanity — eye contact, ask about their day","Listen fully, without agenda","Do small acts of kindness and quiet sacrifice","Offer hospitality to those who can't repay you","Ask God to love your 'unlovables'; pray for them by name"],
+    prompt:"Instead of asking 'Why can't I love this person?' ask 'Where do I feel unsafe right now?'"},
+  joy:{name:"Joy",color:"var(--joy)",hex:"#f5a524",bg:"#fdf3e2",def:"A pervasive, settled sense of well-being.",
+    replaces:"sadness · heaviness · cynicism",
+    is:["A settled condition, not a spike of excitement","Rooted in confidence, not circumstances","Sustained by God's goodness, not by success"],
+    isNot:["Excitement or positivity","Denial of pain","Dependent on things going well"],
+    scripture:["John 15","Psalm 16","Philippians 4","Romans 8"],
+    practices:["Celebrate freely; spend time with friends","Childlike play — color, chase falling leaves, be with children","Be near water, sun, and beauty for 10–30 minutes","Enjoy a good meal slowly; listen to music","Count blessings and give thanks at day's end"],
+    prompt:"Lack of joy is usually not a personality issue — it signals a distorted picture of God."},
+  peace:{name:"Peace",color:"var(--peace)",hex:"#0ea5a4",bg:"#e5f6f5",def:"Resting in the goodness of God.",
+    replaces:"anxiety · hurry · control",
+    is:["Settled confidence, not emotional numbness","Non-anxious presence","The felt assurance that reality is safe in God's hands"],
+    isNot:["Passivity or withdrawal","Avoidance","Lowering your standards"],
+    scripture:["Matthew 6:25–34","Psalm 23","Isaiah 26","John 14"],
+    practices:["Never-ever hurry; eat slowly; drive in the slow lane","Seek quiet — silence, water, a porch in gentle rain","Rest the body — a nap, a hammock, a warm bath","Fast from media; create margin to reconnect with God","Let others make mistakes; accept them as they are"],
+    prompt:"A lack of peace is almost always tied to managing outcomes that were never yours to carry."},
+  faith:{name:"Faith",color:"var(--faith)",hex:"#22b07d",bg:"#e6f6ee",def:"A readiness to act as if what Jesus said is true.",
+    replaces:"fear · insecurity · self-protection · over-functioning",
+    is:["A settled availability to act","What you do without talking yourself into it","Involves risk, not certainty","What lets the soul release control without panic"],
+    isNot:["A feeling of absolute certainty","Mere mental agreement with facts","The absence of doubt or fear","A guarantee everything goes smoothly"],
+    scripture:["Matthew 14:22–33","Hebrews 11","Proverbs 3:5–6","John 6"],
+    practices:["Meditate on Scripture and the character of God","Hear how God has come through for others; read spiritual biography","Take one small risk of obedience daily","Review your journals; pray 'help me in my unbelief'","Follow through when you hear the still, small voice"],
+    prompt:"Faith is not what I believe in theory; it is what I am already prepared to do when Jesus speaks."},
+  hope:{name:"Hope",color:"var(--hope)",hex:"#7c5cff",bg:"#f0edfe",def:"The confident anticipation of good.",
+    replaces:"despair · discouragement · weariness · resignation",
+    is:["Anticipation of good, rooted in God's character","Openness even when the evidence is thin","Resilient expectancy that keeps the soul engaged","The refusal to believe the present moment tells the whole story"],
+    isNot:["Optimism based on favorable trends","Wishful thinking or positive vibes","Denial of pain or loss","Escaping into fantasy instead of staying present"],
+    scripture:["Romans 8:18–25","Hebrews 12","Isaiah 40","Revelation 21"],
+    practices:["Recollect — review God's past work; look at old photos","Read good literature and the lives of the saints","Watch a sunrise; look at beauty","Reframe defeatist language into hopeful truth","Keep a gratitude journal; surround yourself with affirming people"],
+    prompt:"Hope anticipates God's good — not my preferred outcome. That is why it can coexist with suffering."}
+};
+
+const FAMILIES = [
+  {key:"anxiety",label:"Anxiety / Hurry / Control",kingdom:"peace",
+    sub:["Anxious","Worried","Overwhelmed","Stressed","Pressured","Rushed","Tense","Restless"],
+    truth:"God is actively governing my life with care, wisdom, and adequacy — so I do not need to hurry, control, or strive."},
+  {key:"fear",label:"Fear / Insecurity",kingdom:"faith",
+    sub:["Scared","Afraid","Insecure","Inadequate","Threatened","Weak","Helpless","Exposed"],
+    truth:"I am ready to act as if what Jesus said is true. I can release control without panic, because reality is safe in God's hands."},
+  {key:"anger",label:"Anger / Frustration",kingdom:"love",
+    sub:["Mad","Frustrated","Provoked","Irritated","Hostile","Infuriated","Aggressive","Distant"],
+    truth:"I am secure in God and do not need to defend myself. I can will the good of others, regardless of how they treat me."},
+  {key:"resentment",label:"Resentment / Contempt",kingdom:"love",
+    sub:["Resentful","Bitter","Judgmental","Disrespected","Contemptuous","Dismissive","Betrayed","Let down"],
+    truth:"God is the one who sees, and He will make things right. I don't have to keep the account or hold the verdict."},
+  {key:"shame",label:"Shame / Guilt",kingdom:"love",
+    sub:["Ashamed","Guilty","Worthless","Inferior","Remorseful","Not enough","Embarrassed","Humiliated"],
+    truth:"I am fully loved and safe in God's presence. My worth is not at risk, so I don't need to hide or perform."},
+  {key:"sadness",label:"Sadness / Heaviness",kingdom:"joy",
+    sub:["Sad","Heavy","Lonely","Hurt","Grief","Numb","Empty","Disappointed"],
+    truth:"God is good, His Kingdom is real, and I am safely included in it. Joy is a settled confidence beneath the sorrow."},
+  {key:"despair",label:"Despair / Discouragement",kingdom:"hope",
+    sub:["Discouraged","Hopeless","Weary","Cynical","Resigned","Defeated","Powerless","Stuck"],
+    truth:"This present moment does not tell the whole story. God's good is coming, and He is renewing all things."}
+];
+
+const LITURGIES = [
+  {t:"Beginning the Day",d:"Before the day takes you, give it to God.",
+    body:`<p>Father, before I do anything, I remember: your Kingdom is here, and I live in it now.</p><p>You are competent and you are good. Nothing today will reach me that has not first passed through your care.</p><p><span class="resp">I am your child. I have nothing to prove and nothing to protect.</span></p><p>Order my loves. Slow my pace. Let me do the next right thing with you, unhurried and unafraid.</p>`,
+    breath:"<b>Breathe in:</b> The Kingdom of God is at hand. &nbsp; <b>Breathe out:</b> I am safe in your care.",scr:"Lamentations 3:22–23 · Matthew 6:33"},
+  {t:"Before a 1:1",d:"Preparing to be fully present with one person.",
+    body:`<p>Lord, this is a person you love — made in your image, carrying more than I can see.</p><p>Quiet my agenda. Let me listen without rushing to fix, defend, or impress.</p><p><span class="resp">Where I feel unsafe, make me secure in you, so I can will their good.</span></p><p>Give me your patience, your attention, and your affection for them.</p>`,
+    breath:"<b>Before you enter:</b> ask not 'What do I need from this?' but 'What is good for them?'",scr:"Philippians 2:3–4 · James 1:19"},
+  {t:"Before a Meeting",d:"Leading without hurry or the need to win.",
+    body:`<p>God, I bring this meeting to you before it begins.</p><p>I release the need to control the outcome, to be the smartest, or to be seen. You are governing this.</p><p><span class="resp">Let me serve the room rather than perform for it.</span></p><p>Give me clarity, restraint, and a non-anxious presence. Let truth and love both be spoken here.</p>`,
+    breath:"<b>Breathe in:</b> You are in control, not me. &nbsp; <b>Breathe out:</b> I can serve, not strive.",scr:"Proverbs 16:9 · Psalm 127:1"},
+  {t:"Before a Hard Conversation",d:"Courage and love in a difficult moment.",
+    body:`<p>Father, my body wants to protect itself — to attack or to flee. Steady me.</p><p>Remind me that my worth is not on trial here. I am already loved, already safe in you.</p><p><span class="resp">Let me speak the truth in love, and love in truth.</span></p><p>Guard me from contempt. Help me want this person's good even now.</p>`,
+    breath:"<b>Name it:</b> 'Where do I feel unsafe right now?' Then hand that place to God.",scr:"Ephesians 4:15 · Proverbs 15:1"},
+  {t:"Entering Deep Work",d:"Crossing into focused, unhurried attention.",
+    body:`<p>Lord, this work is yours, and I do it with you.</p><p>I set aside the noise, the notifications, the fear of falling behind. This block of time is enough.</p><p><span class="resp">I work from your rest, not for it.</span></p><p>Give me a single-minded attention that is itself a kind of prayer.</p>`,
+    breath:"<b>One thing.</b> Silence the rest. God is not in a hurry, and neither am I.",scr:"Colossians 3:23 · Ecclesiastes 3:1"},
+  {t:"Making a Decision",d:"Discernment when the way is unclear.",
+    body:`<p>God, you are not withholding wisdom from me — you give it generously.</p><p>I lay my options open before you. I don't have to force certainty or manufacture peace.</p><p><span class="resp">Lead me in the way I should go; I am ready to act when you speak.</span></p><p>Free me from the fear of the wrong choice. Your grace covers even my mistakes.</p>`,
+    breath:"<b>Ask, seek, knock.</b> Then take the next faithful step, held by God.",scr:"James 1:5 · Proverbs 3:5–6"},
+  {t:"Money & Stewardship",d:"Holding provision with an open hand.",
+    body:`<p>Father, it is all yours; I only hold it for a while.</p><p>Free me from the anxiety of scarcity and the grip of greed. My security is in you, not in a number.</p><p><span class="resp">Where I am tempted to hoard, make me generous. Where I fear lack, make me trust.</span></p><p>Let my treasure — and therefore my heart — be with you.</p>`,
+    breath:"<b>Enough.</b> God has been faithful; He will be faithful still.",scr:"Matthew 6:19–21 · Philippians 4:19"},
+  {t:"When Overwhelmed",d:"A place to breathe when it's too much.",
+    body:`<p>Lord, it is too much and I am too small — and that is alright, because you are enough.</p><p>I stop. I breathe. I remember that I am not the one holding the world together.</p><p><span class="resp">Cast your cares — He cares for you.</span></p><p>Show me the one next thing. I will leave the rest with you.</p>`,
+    breath:"<b>Breathe in:</b> You carry me. &nbsp; <b>Breathe out:</b> I lay it down.",scr:"1 Peter 5:7 · Matthew 11:28–30"},
+  {t:"Midday Re-centering",d:"The ruthless elimination of hurry.",
+    body:`<p>God, somewhere this morning I began to rush. I return to you now.</p><p>I let go of the tightness in my chest, the racing ahead, the low hum of fear.</p><p><span class="resp">You are here. This moment is enough. I am with you.</span></p><p>Reset my pace to the speed of love.</p>`,
+    breath:"<b>Pause for 60 seconds.</b> Feel your feet. God is in this ordinary hour.",scr:"Psalm 46:10 · Isaiah 30:15"},
+  {t:"The Examen — End of Day",d:"Reviewing the day with God before rest.",
+    body:`<p>Father, I look back over this day with you, not to judge myself but to see you.</p><p><span class="resp">Where did I feel your presence and life today?</span> I give thanks.</p><p><span class="resp">Where did I turn from you — into fear, hurry, or self-protection?</span> I bring it to your mercy.</p><p>Tomorrow I begin again, held by grace. Thank you for this day.</p>`,
+    breath:"<b>Two questions:</b> Where was I most alive to God? Where did I resist Him?",scr:"Psalm 139:23–24 · Lamentations 3:22–23"},
+  {t:"Entering Rest / Sabbath",d:"Ceasing, because God is God and I am not.",
+    body:`<p>Lord, I stop now — not because the work is finished, but because you are trustworthy.</p><p>The world will hold together without me tonight. You never sleep, so I can.</p><p><span class="resp">I rest in the finished work of Christ, not the unfinished work of my hands.</span></p><p>Receive me into your quiet. Restore my soul.</p>`,
+    breath:"<b>It is finished.</b> I lay down my striving and receive His rest.",scr:"Psalm 23:2–3 · Hebrews 4:9–10"}
+];
+
+const AREA_DEFS = [
+  {key:"money",label:"Money",icon:"💰",prayer:"Father, it is all yours and I only hold it for a while. Free me from scarcity and greed; let my treasure — and my heart — be with you.",
+    vision:"I see money as God's, entrusted to me for the flourishing of others and the Kingdom. I am free from the anxiety of scarcity and the grip of greed. My worth is not my net worth.",
+    intention:"I choose to hold money with an open hand — to give first, save wisely, spend gratefully, and refuse to let it define me or master me.",
+    means:"Generous giving (some of it in secret); a simple budget reviewed monthly; prayer over financial decisions before acting; gratitude at day's end; and being extra generous when money feels tight."},
+  {key:"relationships",label:"Relationships",icon:"🤝",prayer:"Lord, make me safe enough in your love that I no longer need to protect myself, so that I can will the good of others — even the difficult ones.",
+    vision:"I am a person through whom the love of Christ flows freely — present, unhurried, willing the good of others regardless of how they treat me, secure enough in God that I no longer need to defend myself.",
+    intention:"I choose to be fully present, to listen without agenda, to forgive quickly, and to pursue the good of the people God has placed around me — especially the ones who are hard to love.",
+    means:"Eye contact and real questions; listening without fixing; quick forgiveness; praying for my 'unlovables' by name; and asking 'Where do I feel unsafe?' instead of 'Why can't I love this person?'"},
+  {key:"work",label:"Work",icon:"🛠️",prayer:"God, I work with you and for you. Free me from the need to prove myself, and let me work from your rest rather than for it.",
+    vision:"I do my work with and for God — competent, unhurried, and free from the need to prove myself. My identity is secure in Christ, not in outcomes, titles, or applause.",
+    intention:"I choose to work from rest, not for it; to serve rather than to be seen; and to release control of what was never mine to carry.",
+    means:"Protected blocks of deep, focused work; a re-centering prayer before meetings and 1:1s; the Examen at day's end; and the ruthless elimination of hurry."},
+  {key:"body",label:"Body",icon:"🌿",prayer:"Father, thank you for this body — your good gift and dwelling place. Teach me to receive rest, movement, and limits as means of your grace.",
+    vision:"I honor my body as God's good gift and dwelling place — receiving rest, movement, food, sunlight, and limits as means of grace rather than problems to manage or override.",
+    intention:"I choose to live at a humane pace: to sleep, to move, to eat with gratitude, and to accept my creaturely limits as an act of trust.",
+    means:"Regular sleep and Sabbath; daily movement; meals eaten slowly and gratefully; time in nature and sun; and honoring the body's signals instead of overriding them."},
+  {key:"mind",label:"Mind",icon:"🕊️",prayer:"Lord, renew my mind. Let me dwell on what is true and lovely, and immerse my thoughts in your reality until it becomes believable, then embodied.",
+    vision:"My mind is increasingly set on things above — renewed, attentive, and at peace. I dwell on what is true, noble, and lovely, and I bring my thoughts captive to Christ.",
+    intention:"I choose to guard what I attend to, to reframe anxious and defeatist thoughts with Kingdom truth, and to immerse my mind in Scripture until a truer vision of reality becomes believable and embodied.",
+    means:"Scripture meditation and memorizing Kingdom truths; fasting from media and noise; naming and replacing negative thoughts; and regular silence and solitude."}
+];
+
+const SETTINGS_OPTS=["Unspecified","A 1:1 conversation","A meeting","Leading the team","A hard conversation","Deep / focused work","A decision","Email & messages","Preaching / teaching","Travel / commute","At home / family","Rest / Sabbath","Prayer / devotion","Ministry / pastoral care","Finances","Other"];
+
+const QUOTES=[
+ "“The Kingdom of the Heavens is not a matter of my getting into heaven, but of heaven getting into me.” — Dallas Willard",
+ "“Hurry is the great enemy of spiritual life in our day. You must ruthlessly eliminate hurry from your life.”",
+ "“The greatest need you and I have is the renovation of our heart.”",
+ "“Grace is not opposed to effort; it is opposed to earning.”",
+ "“We should aim to live our whole lives immersed in the presence of God.”",
+ "“The soul is the deepest part of us — and it must be tended, not driven.”",
+ "“You are an unceasing spiritual being with an eternal destiny in God's great universe.”",
+ "“The obviously well-kept secret of the ‘ordinary’ is that it is made to be a receptacle of the divine.”"
+];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const LS_KEY="withGodLife_v1";
+const FB_KEY="withGodLife_fbcfg";
+let state=load();
+let editingId=null, selectedFamily=null;
+
+function blankState(){
+  const areas={}; AREA_DEFS.forEach(a=>{areas[a.key]={vision:a.vision,intention:a.intention,means:a.means};});
+  return {entries:[],areas,settings:{name:"",title:"The With-God Life"},activeArea:"money"};
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(LS_KEY); if(!raw) return blankState();
+    const s=JSON.parse(raw);
+    if(!s.areas) s.areas=blankState().areas;
+    AREA_DEFS.forEach(a=>{if(!s.areas[a.key]) s.areas[a.key]={vision:a.vision,intention:a.intention,means:a.means};});
+    if(!s.settings) s.settings={name:"",title:"The With-God Life"};
+    if(!s.entries) s.entries=[];
+    if(!s.activeArea) s.activeArea="money";
+    return s;
+  }catch(e){console.warn("load failed",e);return blankState();}
+}
+function save(){ try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){toast("Couldn't save locally — storage may be full");} }
+
+/* ---------- util ---------- */
+function uid(){return Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36);}
+function esc(s){return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function clean(o){return JSON.parse(JSON.stringify(o));}
+function fmtTime(iso){return new Date(iso).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});}
+function fmtDay(iso){return new Date(iso).toLocaleDateString([],{weekday:"long",month:"long",day:"numeric",year:"numeric"});}
+function todayKey(iso){const d=iso?new Date(iso):new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2400);}
+function activeView(){const v=document.querySelector(".view.active");return v?v.id.replace("view-",""):"today";}
+function rerenderActive(){const v=activeView();if(v==="today")renderToday();else if(v==="areas")renderAreas();else if(v==="collection")renderCollection();}
+
+/* =========================================================
+   NAV
+   ========================================================= */
+const NAV=[
+  {id:"today",label:"Today",icon:'<path d="M12 3v2M12 19v2M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/><circle cx="12" cy="12" r="4"/>'},
+  {id:"areas",label:"Areas",icon:'<path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>'},
+  {id:"liturgies",label:"Prayers",icon:'<path d="M12 3v18M12 3c-1.5 2-4 3-6 3v6c0 4 3 6 6 8 3-2 6-4 6-8V6c-2 0-4.5-1-6-3z"/>'},
+  {id:"emotions",label:"Feelings",icon:'<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6 6 18"/>'},
+  {id:"collection",label:"Collection",icon:'<path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M8 3v4M16 3v4M8 11h8M8 15h5"/>'}
+];
+function buildNav(){
+  document.getElementById("bottomnav").innerHTML=NAV.map(n=>`
+    <button class="nav-btn" id="nav-${n.id}" onclick="go('${n.id}')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${n.icon}</svg>
+      <span class="lb">${n.label}</span></button>`).join("");
+}
+function go(id){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+id).classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  const nb=document.getElementById("nav-"+id); if(nb) nb.classList.add("active");
+  document.getElementById("fab").style.display=(id==="today")?"flex":"none";
+  window.scrollTo({top:0,behavior:"smooth"});
+  if(id==="today")renderToday();
+  if(id==="areas")renderAreas();
+  if(id==="liturgies")renderLiturgies();
+  if(id==="emotions")renderKingdomReference();
+  if(id==="collection"){renderCollection();renderSyncUI();}
+}
+
+/* =========================================================
+   TODAY
+   ========================================================= */
+function renderToday(){
+  const name=state.settings.name?", "+state.settings.name:"";
+  const h=new Date().getHours();
+  const greet=h<12?"Good morning":h<17?"Good afternoon":"Good evening";
+  document.getElementById("todayGreeting").textContent=greet+name;
+  document.getElementById("dailyQuote").textContent=QUOTES[new Date().getDate()%QUOTES.length];
+  const tk=todayKey();
+  const todays=state.entries.filter(e=>todayKey(e.createdAt)===tk).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+  const tl=document.getElementById("todayTimeline");
+  if(!todays.length){tl.innerHTML=`<div class="empty"><div class="big">✎</div><p>No moments captured yet today.<br>When something stirs you — a meeting, a feeling, a small grace — capture it here.</p></div>`;return;}
+  tl.innerHTML=`<div class="timeline">${todays.map(entryCard).join("")}</div>`;
+}
+function entryCard(e){
+  const k=e.kingdom?KINGDOM[e.kingdom]:null;
+  const areaLabel=e.area&&e.area!=="none"?(AREA_DEFS.find(a=>a.key===e.area)||{}).label:null;
+  const tags=[];
+  if(e.setting&&e.setting!=="Unspecified")tags.push(`<span class="tag">${esc(e.setting)}</span>`);
+  if(areaLabel)tags.push(`<span class="tag">${esc(areaLabel)}</span>`);
+  if(k)tags.push(`<span class="tag kingdom" style="background:${k.hex}">${e.emotionSpecific?esc(e.emotionSpecific)+" → ":""}${k.name}</span>`);
+  return `<div class="tl-entry"><div class="entry-card">
+    <div class="entry-top"><span class="time-badge">${fmtTime(e.createdAt)}</span>${tags.join("")}</div>
+    ${e.title?`<div class="entry-title">${esc(e.title)}</div>`:""}
+    <div class="entry-body">${e.body||""}</div>
+    ${e.surrender?`<div class="entry-surrender">${esc(e.surrender)}</div>`:""}
+    <div class="entry-actions"><button class="btn ghost sm" onclick="openEntry('edit','${e.id}')">Open</button></div>
+  </div></div>`;
+}
+
+/* =========================================================
+   ENTRY MODAL
+   ========================================================= */
+function buildToolbar(){
+  const tb=document.getElementById("e_toolbar");
+  const btns=[{c:"bold",h:"<b>B</b>",cmd:"bold"},{c:"italic",h:"<i>I</i>",cmd:"italic"},{c:"underline",h:"<u>U</u>",cmd:"underline"},{sep:1},
+    {c:"h",h:"H",cmd:"formatBlock",val:"H3"},{c:"quote",h:"❝",cmd:"formatBlock",val:"BLOCKQUOTE"},{c:"ul",h:"•",cmd:"insertUnorderedList"},{c:"ol",h:"1.",cmd:"insertOrderedList"},{sep:1},{c:"clear",h:"⌫",cmd:"removeFormat"}];
+  tb.innerHTML=btns.map(b=>b.sep?`<span class="sep"></span>`:`<button type="button" title="${b.c}" onmousedown="event.preventDefault()" onclick="exec('${b.cmd}','${b.val||""}')">${b.h}</button>`).join("");
+}
+function exec(cmd,val){document.getElementById("e_body").focus();document.execCommand(cmd,false,val||null);}
+function buildEntrySelectors(){
+  document.getElementById("e_setting").innerHTML=SETTINGS_OPTS.map(o=>`<option>${o}</option>`).join("");
+  document.getElementById("e_area").innerHTML=`<option value="none">— none —</option>`+AREA_DEFS.map(x=>`<option value="${x.key}">${x.label}</option>`).join("");
+  document.getElementById("e_families").innerHTML=FAMILIES.map(f=>{const k=KINGDOM[f.kingdom];
+    return `<button type="button" class="fam-chip" data-fam="${f.key}" style="--kc:${k.hex};--kbg:${k.bg}" onclick="selectFamily('${f.key}')"><span class="fl">${f.label}</span><span class="fr">→ ${k.name}</span></button>`;}).join("");
+}
+function selectFamily(key){
+  selectedFamily=(selectedFamily===key)?null:key;
+  document.querySelectorAll("#e_families .fam-chip").forEach(c=>c.classList.toggle("sel",c.dataset.fam===selectedFamily));
+  const subWrap=document.getElementById("e_subwrap"),kBox=document.getElementById("e_kingdom");
+  if(!selectedFamily){subWrap.classList.remove("show");kBox.innerHTML="";return;}
+  const f=FAMILIES.find(x=>x.key===selectedFamily);
+  document.getElementById("e_sub").innerHTML=`<option value="">— unnamed —</option>`+f.sub.map(s=>`<option>${s}</option>`).join("");
+  subWrap.classList.add("show");renderKingdomInline(f);
+}
+function renderKingdomInline(f){
+  const k=KINGDOM[f.kingdom];
+  document.getElementById("e_kingdom").innerHTML=`
+    <div class="kingdom-card" style="--kc:${k.hex};background:${k.bg}">
+      <div class="kaccent" style="background:${k.hex}"></div>
+      <div class="kk"><span class="kname" style="color:${k.hex}">Replace with ${k.name}</span></div>
+      <div class="kdef">${k.def}</div>
+      <div class="truth" style="--kc:${k.hex}">${f.truth}</div>
+      <div class="mini-h">A practice to embody it</div>
+      <div class="muted" style="font-size:14px">${k.practices[0]}</div>
+      <div class="mini-h">Rest in</div>
+      <div class="chips">${verseChips(k.scripture)}</div>
+      <div class="row" style="margin-top:12px"><button type="button" class="btn sm" onclick="useTruth('${f.key}')">Use this in my surrender ↓</button></div>
+    </div>`;
+}
+function useTruth(key){
+  const f=FAMILIES.find(x=>x.key===key),ta=document.getElementById("e_surrender"),existing=ta.value.trim();
+  ta.value=(existing?existing+"\n":"")+"Lord, I give you this "+f.label.split(" / ")[0].toLowerCase()+". I receive instead: "+f.truth;
+  ta.focus();
+}
+function openEntry(mode,id){
+  buildEntrySelectors();
+  selectedFamily=null;
+  document.querySelectorAll("#e_families .fam-chip").forEach(c=>c.classList.remove("sel"));
+  document.getElementById("e_subwrap").classList.remove("show");
+  document.getElementById("e_kingdom").innerHTML="";
+  const delBtn=document.getElementById("e_delete");
+  if(mode==="edit"&&id){
+    const e=state.entries.find(x=>x.id===id); if(!e)return;
+    editingId=id;
+    document.getElementById("entryModalTitle").textContent="Edit entry";
+    document.getElementById("e_title").value=e.title||"";
+    document.getElementById("e_setting").value=e.setting||"Unspecified";
+    document.getElementById("e_area").value=e.area||"none";
+    document.getElementById("e_body").innerHTML=e.body||"";
+    document.getElementById("e_surrender").value=e.surrender||"";
+    if(e.family){selectFamily(e.family);if(e.emotionSpecific)document.getElementById("e_sub").value=e.emotionSpecific;}
+    delBtn.style.display="inline-flex";
+  }else{
+    editingId=null;
+    document.getElementById("entryModalTitle").textContent="Capture a moment";
+    document.getElementById("e_title").value="";
+    document.getElementById("e_setting").value="Unspecified";
+    document.getElementById("e_area").value="none";
+    document.getElementById("e_body").innerHTML="";
+    document.getElementById("e_surrender").value="";
+    delBtn.style.display="none";
+  }
+  document.getElementById("entryModal").classList.add("show");
+  document.body.style.overflow="hidden";
+}
+function closeEntry(){document.getElementById("entryModal").classList.remove("show");document.body.style.overflow="";editingId=null;selectedFamily=null;}
+function saveEntry(){
+  const title=document.getElementById("e_title").value.trim();
+  const body=document.getElementById("e_body").innerHTML.trim();
+  const surrender=document.getElementById("e_surrender").value.trim();
+  if(!title&&!body&&!surrender&&!selectedFamily){toast("Write something first");return;}
+  const f=selectedFamily?FAMILIES.find(x=>x.key===selectedFamily):null;
+  const rec={title,body,surrender,
+    setting:document.getElementById("e_setting").value,
+    area:document.getElementById("e_area").value,
+    family:selectedFamily||null,
+    emotionSpecific:selectedFamily?document.getElementById("e_sub").value:"",
+    kingdom:f?f.kingdom:null,kingdomTruth:f?f.truth:""};
+  let saved;
+  if(editingId){const e=state.entries.find(x=>x.id===editingId);Object.assign(e,rec);e.updatedAt=new Date().toISOString();saved=e;}
+  else{rec.id=uid();rec.createdAt=new Date().toISOString();state.entries.push(rec);saved=rec;}
+  save(); cloudWriteEntry(saved);
+  closeEntry(); toast(editingId?"Entry updated":"Captured — grace to you");
+  renderToday(); if(activeView()==="collection")renderCollection();
+}
+function deleteCurrentEntry(){
+  if(!editingId)return;
+  const id=editingId;
+  state.entries=state.entries.filter(x=>x.id!==id);
+  save(); cloudDeleteEntry(id);
+  closeEntry(); toast("Entry removed"); renderToday(); if(activeView()==="collection")renderCollection();
+}
+
+/* =========================================================
+   AREAS
+   ========================================================= */
+function renderAreas(){
+  document.getElementById("areaTabs").innerHTML=AREA_DEFS.map(a=>`<button class="area-tab ${a.key===state.activeArea?'active':''}" onclick="setArea('${a.key}')">${a.icon} ${a.label}</button>`).join("");
+  renderAreaPanel();
+}
+function setArea(k){state.activeArea=k;save();renderAreas();}
+function renderAreaPanel(){
+  const a=AREA_DEFS.find(x=>x.key===state.activeArea),d=state.areas[state.activeArea];
+  const areaEntries=state.entries.filter(e=>e.area===a.key).sort((x,y)=>y.createdAt.localeCompare(x.createdAt));
+  const vim=[
+    {v:"V",label:"Vision",hint:"The compelling picture of life with God in this area",key:"vision",ph:"Who am I becoming here? What does life in the Kingdom look like in this area?"},
+    {v:"I",label:"Intention",hint:"The decisive choice to pursue that vision",key:"intention",ph:"What have I actually decided? Name the resolve."},
+    {v:"M",label:"Means",hint:"The practices that make it real",key:"means",ph:"What practices, disciplines, and rhythms will I use?"}
+  ];
+  document.getElementById("areaPanel").innerHTML=`
+    <div class="card"><div class="row between" style="margin-bottom:6px"><h3 style="margin:0;font-size:21px;color:var(--accent-ink)">${a.icon} ${a.label}</h3></div>
+      <p class="muted" style="font-size:14px;margin:0;font-style:italic">${esc(a.prayer)}</p></div>
+    <div class="card"><div class="mini-h" style="margin-top:0">Willard's VIM — your pattern for change here</div>
+      ${vim.map(x=>`<div class="vim-block">
+          <div class="vim-label"><span class="v">${x.v}</span>${x.label} <span class="hint">· ${x.hint}</span></div>
+          <div class="toolbar" style="border-radius:11px 11px 0 0">
+            <button type="button" onmousedown="event.preventDefault()" onclick="areaExec('${x.key}','bold')"><b>B</b></button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="areaExec('${x.key}','italic')"><i>I</i></button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="areaExec('${x.key}','insertUnorderedList')">•</button></div>
+          <div class="editor" id="area_${x.key}" contenteditable="true" data-ph="${x.ph}" oninput="markAreaDirty()">${d[x.key]||""}</div>
+        </div>`).join("")}
+      <div class="row" style="margin-top:6px"><button class="btn primary sm" onclick="saveArea()">Save ${a.label}</button>
+      <button class="btn ghost sm" onclick="restoreAreaDefault()">Restore starter text</button></div></div>
+    <div class="card"><div class="row between"><div class="mini-h" style="margin:0">Journal — ${a.label}</div>
+        <button class="btn sm" onclick="openAreaEntry('${a.key}')">+ New entry</button></div>
+      <div style="margin-top:12px">${areaEntries.length?areaEntries.map(entryCard).join(""):`<p class="faint" style="font-size:14px;text-align:center;padding:14px 0">No entries yet in this area. Pray, then write.</p>`}</div></div>`;
+}
+function areaExec(key,cmd){document.getElementById("area_"+key).focus();document.execCommand(cmd,false,null);}
+let areaDirty=false;
+function markAreaDirty(){areaDirty=true;}
+function saveArea(){
+  const d=state.areas[state.activeArea];
+  ["vision","intention","means"].forEach(k=>{d[k]=document.getElementById("area_"+k).innerHTML.trim();});
+  save(); cloudWriteConfig("areas",state.areas); areaDirty=false;
+  toast("Saved — "+AREA_DEFS.find(a=>a.key===state.activeArea).label);
+}
+function restoreAreaDefault(){
+  const a=AREA_DEFS.find(x=>x.key===state.activeArea);
+  state.areas[state.activeArea]={vision:a.vision,intention:a.intention,means:a.means};
+  save();cloudWriteConfig("areas",state.areas);renderAreaPanel();toast("Starter text restored");
+}
+function openAreaEntry(areaKey){openEntry('today');document.getElementById("e_area").value=areaKey;document.getElementById("entryModalTitle").textContent="New entry — "+AREA_DEFS.find(a=>a.key===areaKey).label;}
+
+/* =========================================================
+   LITURGIES
+   ========================================================= */
+function renderLiturgies(){
+  document.getElementById("liturgyList").innerHTML=LITURGIES.map((l,i)=>`
+    <div class="card lit-card" onclick="toggleLit(${i})"><div class="row between">
+        <div><div class="lt">${l.t}</div><div class="ld">${l.d}</div></div>
+        <span class="faint" id="litarrow${i}" style="font-size:20px">›</span></div>
+      <div class="lit-body" id="lit${i}"><div class="lit-text">${l.body}</div>
+        ${l.breath?`<div class="breath">${l.breath}</div>`:""}${l.scr?`<div class="lit-scr">${verseLine(l.scr)}</div>`:""}
+        <div class="row" style="margin-top:12px"><button class="btn sm" onclick="event.stopPropagation();journalFromLiturgy('${esc(l.t).replace(/'/g,"")}')">Journal from this prayer</button></div>
+      </div></div>`).join("");
+}
+function toggleLit(i){const b=document.getElementById("lit"+i);const open=b.classList.toggle("show");document.getElementById("litarrow"+i).textContent=open?"⌄":"›";}
+function journalFromLiturgy(title){openEntry('today');document.getElementById("e_title").value=title;document.getElementById("e_setting").value="Prayer / devotion";}
+
+/* =========================================================
+   KINGDOM REFERENCE
+   ========================================================= */
+function renderKingdomReference(){
+  const order=["love","joy","peace","faith","hope"];
+  document.getElementById("kingdomReference").innerHTML=order.map(key=>{const k=KINGDOM[key];
+    return `<div class="card" style="border-left:4px solid ${k.hex}">
+      <div class="kk" style="margin-bottom:2px"><span class="kname" style="color:${k.hex}">${k.name}</span><span class="kdef">${k.def}</span></div>
+      <div class="faint" style="font-size:12.5px;margin-bottom:8px">Replaces ${k.replaces}</div>
+      <div class="truth" style="--kc:${k.hex}">${k.prompt}</div>
+      <div class="two-col">
+        <div><div class="mini-h">${k.name} is</div><ul style="margin:0;padding-left:18px;font-size:14px;color:var(--ink-soft)">${k.is.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+        <div><div class="mini-h">${k.name} is not</div><ul style="margin:0;padding-left:18px;font-size:14px;color:var(--ink-soft)">${k.isNot.map(x=>`<li>${x}</li>`).join("")}</ul></div></div>
+      <div class="mini-h">Practices</div><ul style="margin:0;padding-left:18px;font-size:14px;color:var(--ink-soft)">${k.practices.map(x=>`<li>${x}</li>`).join("")}</ul>
+      <div class="mini-h">Scripture</div><div class="chips">${verseChips(k.scripture)}</div>
+    </div>`;}).join("");
+}
+
+/* =========================================================
+   COLLECTION
+   ========================================================= */
+function initCollectionFilters(){document.getElementById("filterArea").innerHTML=`<option value="">All areas</option>`+AREA_DEFS.map(a=>`<option value="${a.key}">${a.label}</option>`).join("");}
+function renderCollection(){
+  const q=(document.getElementById("searchBox").value||"").toLowerCase();
+  const fa=document.getElementById("filterArea").value,fk=document.getElementById("filterKingdom").value;
+  let list=state.entries.slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+  if(fa)list=list.filter(e=>e.area===fa);
+  if(fk)list=list.filter(e=>e.kingdom===fk);
+  if(q)list=list.filter(e=>((e.title||"")+" "+(e.body||"")+" "+(e.surrender||"")+" "+(e.emotionSpecific||"")).toLowerCase().includes(q));
+  document.getElementById("collectionStats").textContent=state.entries.length?`${list.length} of ${state.entries.length} ${state.entries.length===1?"entry":"entries"}`:"";
+  const wrap=document.getElementById("collectionList");
+  if(!list.length){wrap.innerHTML=`<div class="empty"><div class="big">❧</div><p>${state.entries.length?"No entries match your filters.":"Your collection is empty. Every moment you capture will gather here."}</p></div>`;return;}
+  const groups={};list.forEach(e=>{const d=fmtDay(e.createdAt);(groups[d]=groups[d]||[]).push(e);});
+  wrap.innerHTML=Object.keys(groups).map(day=>`<div class="day-group"><div class="day-head">${day}</div>${groups[day].map(entryCard).join("")}</div>`).join("");
+}
+
+/* =========================================================
+   SETTINGS / BACKUP
+   ========================================================= */
+function loadSettingsUI(){document.getElementById("userName").value=state.settings.name||"";document.getElementById("titleInput").value=state.settings.title||"The With-God Life";applyTitle();}
+function saveSettings(){
+  state.settings.name=document.getElementById("userName").value.trim();
+  state.settings.title=document.getElementById("titleInput").value.trim()||"The With-God Life";
+  save(); cloudWriteConfig("settings",state.settings); applyTitle(); renderToday(); toast("Saved");
+}
+function applyTitle(){document.getElementById("appTitle").textContent=state.settings.title||"The With-God Life";document.title=(state.settings.title||"The With-God Life")+" — A Formation Journal";}
+function exportData(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a"),d=new Date();
+  const stamp=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  a.href=url;a.download="with-god-journal-"+stamp+".json";a.click();URL.revokeObjectURL(url);toast("Backup downloaded");
+}
+function importData(ev){
+  const file=ev.target.files[0];if(!file)return;const r=new FileReader();
+  r.onload=()=>{try{
+      const imp=JSON.parse(r.result);if(!imp.entries)throw new Error("bad");
+      if(confirm("Import this backup? It replaces the journal on this device (and syncs the result if connected). Export first if unsure.")){
+        state=imp;
+        if(!state.settings)state.settings={name:"",title:"The With-God Life"};
+        if(!state.areas)state.areas=blankState().areas;
+        if(!state.activeArea)state.activeArea="money";
+        save();loadSettingsUI();initCollectionFilters();renderCollection();renderToday();
+        cloudPushAll();
+        toast("Journal imported ("+state.entries.length+" entries)");
+      }
+    }catch(e){toast("That file isn't a valid backup");}};
+  r.readAsText(file);ev.target.value="";
+}
+function resetAll(){
+  if(!confirm("This permanently erases every entry and all your VIM text on THIS device. Export a backup first if you want to keep anything. Continue?"))return;
+  if(!confirm("Are you absolutely sure? This cannot be undone."))return;
+  const wipeCloud=cloudActive();
+  state=blankState();save();loadSettingsUI();initCollectionFilters();renderCollection();renderToday();renderAreas();
+  if(wipeCloud)cloudWipe();
+  toast("Everything erased");
+}
+
+/* =========================================================
+   FIREBASE REAL-TIME SYNC
+   ========================================================= */
+const cloud={enabled:false,ready:false,uid:null,email:null,status:"local",db:null,auth:null,api:null,unsub:[]};
+function cloudActive(){return cloud.enabled&&cloud.ready&&cloud.uid;}
+
+function getFbConfig(){try{const r=localStorage.getItem(FB_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function parseConfig(text){
+  text=(text||"").trim(); if(!text)return null;
+  try{return JSON.parse(text);}catch(e){}
+  const m=text.match(/\{[\s\S]*\}/); if(!m)return null;
+  try{return (new Function("return ("+m[0]+")"))();}catch(e){return null;}
+}
+function setStatus(s){cloud.status=s;paintSync();}
+function paintSync(){
+  const map={local:["Local only","#8b96ad"],connecting:["Connecting…","#f5a524"],signedout:["Sign in to sync","#f5a524"],
+    syncing:["Syncing…","#3b6ef6"],synced:["Synced ✓","#22b07d"],offline:["Offline · will sync","#f5a524"],error:["Sync error","#e5486d"]};
+  const [t,c]=map[cloud.status]||map.local;
+  const badge=document.getElementById("syncBadge");if(badge){badge.textContent=t;badge.style.color=c;badge.style.borderColor=c+"66";}
+  const dot=document.getElementById("sdot"),st=document.getElementById("syncStateText");
+  if(dot)dot.style.background=c; if(st){st.textContent=t;st.style.color=c;}
+}
+
+async function loadFirebase(){
+  const V="https://www.gstatic.com/firebasejs/10.12.2/";
+  const [app,auth,fs]=await Promise.all([import(V+"firebase-app.js"),import(V+"firebase-auth.js"),import(V+"firebase-firestore.js")]);
+  return {app,auth,fs};
+}
+async function cloudInit(config,silent){
+  cloud.enabled=true; setStatus("connecting");
+  try{
+    const fb=await loadFirebase();
+    const app=fb.app.initializeApp(config);
+    let db;
+    try{ db=fb.fs.initializeFirestore(app,{localCache:fb.fs.persistentLocalCache({tabManager:fb.fs.persistentMultipleTabManager()})}); }
+    catch(e){ db=fb.fs.getFirestore(app); }
+    const auth=fb.auth.getAuth(app);
+    try{ await fb.auth.setPersistence(auth,fb.auth.browserLocalPersistence); }catch(e){}
+    cloud.db=db; cloud.auth=auth; cloud.ready=true;
+    cloud.api={setDoc:fb.fs.setDoc,doc:fb.fs.doc,deleteDoc:fb.fs.deleteDoc,collection:fb.fs.collection,onSnapshot:fb.fs.onSnapshot,getDocs:fb.fs.getDocs,getDoc:fb.fs.getDoc,writeBatch:fb.fs.writeBatch};
+    cloud._auth=fb.auth;
+    fb.auth.onAuthStateChanged(auth,async user=>{
+      if(user){cloud.uid=user.uid;cloud.email=user.email;setStatus("syncing");
+        try{await cloudInitialMerge();}catch(e){console.warn("merge",e);}
+        cloudAttach(); renderSyncUI();
+      }else{cloud.uid=null;cloud.email=null;detachCloud();setStatus("signedout");renderSyncUI();}
+    });
+  }catch(e){
+    console.warn("cloudInit failed",e);cloud.enabled=false;cloud.ready=false;setStatus("error");
+    if(!silent)toast("Couldn't connect — check the config and your network");
+    renderSyncUI();
+  }
+}
+function detachCloud(){cloud.unsub.forEach(u=>{try{u();}catch(e){}});cloud.unsub=[];}
+async function cloudInitialMerge(){
+  const {collection,getDocs,setDoc,doc,getDoc}=cloud.api,db=cloud.db,uid=cloud.uid;
+  const snap=await getDocs(collection(db,`users/${uid}/entries`));
+  const cloudIds=new Set();snap.forEach(d=>cloudIds.add(d.id));
+  for(const e of state.entries){if(!cloudIds.has(e.id)){try{await setDoc(doc(db,`users/${uid}/entries/${e.id}`),clean(e));}catch(err){}}}
+  try{const aRef=doc(db,`users/${uid}/config/areas`);if(!(await getDoc(aRef)).exists())await setDoc(aRef,{data:clean(state.areas)});}catch(e){}
+  try{const sRef=doc(db,`users/${uid}/config/settings`);if(!(await getDoc(sRef)).exists())await setDoc(sRef,{data:clean(state.settings)});}catch(e){}
+}
+function cloudAttach(){
+  detachCloud();
+  const {collection,onSnapshot,doc}=cloud.api,db=cloud.db,uid=cloud.uid;
+  cloud.unsub.push(onSnapshot(collection(db,`users/${uid}/entries`),snap=>{
+    const arr=[];snap.forEach(d=>arr.push(Object.assign({id:d.id},d.data())));
+    state.entries=arr;save();
+    setStatus(snap.metadata.fromCache?"offline":"synced");
+    rerenderActive();
+  },err=>{console.warn(err);setStatus("error");}));
+  cloud.unsub.push(onSnapshot(doc(db,`users/${uid}/config/areas`),d=>{if(d.exists()&&d.data().data){state.areas=d.data().data;save();if(activeView()==="areas")renderAreas();}}));
+  cloud.unsub.push(onSnapshot(doc(db,`users/${uid}/config/settings`),d=>{if(d.exists()&&d.data().data){state.settings=d.data().data;save();applyTitle();loadSettingsUI();}}));
+}
+function cloudWriteEntry(rec){
+  if(!cloudActive())return;
+  const {setDoc,doc}=cloud.api;setStatus("syncing");
+  setDoc(doc(cloud.db,`users/${cloud.uid}/entries/${rec.id}`),clean(rec)).then(()=>setStatus("synced")).catch(()=>setStatus("offline"));
+}
+function cloudDeleteEntry(id){if(!cloudActive())return;const {deleteDoc,doc}=cloud.api;deleteDoc(doc(cloud.db,`users/${cloud.uid}/entries/${id}`)).catch(()=>{});}
+function cloudWriteConfig(which,data){if(!cloudActive())return;const {setDoc,doc}=cloud.api;setDoc(doc(cloud.db,`users/${cloud.uid}/config/${which}`),{data:clean(data)}).catch(()=>{});}
+async function cloudPushAll(){
+  if(!cloudActive())return;
+  const {setDoc,doc}=cloud.api,db=cloud.db,uid=cloud.uid;setStatus("syncing");
+  try{for(const e of state.entries){await setDoc(doc(db,`users/${uid}/entries/${e.id}`),clean(e));}
+    await setDoc(doc(db,`users/${uid}/config/areas`),{data:clean(state.areas)});
+    await setDoc(doc(db,`users/${uid}/config/settings`),{data:clean(state.settings)});
+    setStatus("synced");}catch(e){setStatus("offline");}
+}
+async function cloudWipe(){
+  if(!cloudActive())return;
+  const {getDocs,collection,writeBatch,doc,deleteDoc}=cloud.api,db=cloud.db,uid=cloud.uid;
+  try{const snap=await getDocs(collection(db,`users/${uid}/entries`));
+    const batch=writeBatch(db);snap.forEach(d=>batch.delete(d.ref));await batch.commit();
+    await deleteDoc(doc(db,`users/${uid}/config/areas`)).catch(()=>{});
+    await deleteDoc(doc(db,`users/${uid}/config/settings`)).catch(()=>{});
+  }catch(e){console.warn(e);}
+}
+
+/* ---------- Sync UI ---------- */
+const RULES=`rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+  }
+}`;
+function renderSyncUI(){
+  const body=document.getElementById("syncBody");if(!body)return;
+  const cfg=getFbConfig();
+  const guide=`<details class="guide"><summary>First-time setup — how to get your Firebase keys</summary>
+    <ol>
+      <li>Go to <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a> and create a free project.</li>
+      <li>Click the <b>&lt;/&gt;</b> (Web) icon to add a web app. Firebase shows you a <code>firebaseConfig</code> object — copy the whole <code>{ … }</code>.</li>
+      <li>In <b>Build → Authentication → Sign-in method</b>, enable <b>Email/Password</b>.</li>
+      <li>In <b>Build → Firestore Database</b>, click <b>Create database</b> (Production mode is fine).</li>
+      <li>In Firestore <b>Rules</b>, paste the rules below and Publish:</li>
+    </ol>
+    <pre class="rules">${esc(RULES)}</pre>
+    <p class="help" style="padding:0 0 8px">Then paste your config above and create an account with the same email/password on each device.</p>
+  </details>`;
+
+  if(!cfg){
+    body.innerHTML=`
+      <div class="field"><label class="fld">Paste your Firebase config</label>
+        <textarea id="fbConfigInput" rows="6" placeholder='{ "apiKey": "…", "authDomain": "…", "projectId": "…", "storageBucket": "…", "messagingSenderId": "…", "appId": "…" }'></textarea></div>
+      <button class="btn primary" onclick="onConnectConfig()">Connect Firebase</button>
+      ${guide}`;
+    return;
+  }
+  if(!cloud.uid){
+    body.innerHTML=`
+      <p class="help" style="margin-top:0">Project <code>${esc(cfg.projectId||"connected")}</code> connected. Sign in with the same account on every device to sync.</p>
+      <div class="two-col">
+        <div class="field"><label class="fld">Email</label><input type="email" id="fbEmail" autocomplete="username" placeholder="you@email.com"></div>
+        <div class="field"><label class="fld">Password</label><input type="password" id="fbPass" autocomplete="current-password" placeholder="••••••••"></div>
+      </div>
+      <div class="row"><button class="btn primary" onclick="onSignIn()">Sign in</button>
+        <button class="btn" onclick="onSignUp()">Create account</button>
+        <button class="btn ghost sm" onclick="onDisconnect()">Disconnect project</button></div>
+      ${guide}`;
+    return;
+  }
+  body.innerHTML=`
+    <p class="help" style="margin-top:0">Syncing in real time as <b>${esc(cloud.email||"")}</b>. New entries appear on your other devices within a second.</p>
+    <div class="row"><button class="btn" onclick="onSignOut()">Sign out (this device)</button>
+      <button class="btn ghost sm danger" onclick="onDisconnect()">Disconnect project</button></div>`;
+}
+async function onConnectConfig(){
+  const cfg=parseConfig(document.getElementById("fbConfigInput").value);
+  if(!cfg||!cfg.apiKey||!cfg.projectId){toast("That doesn't look like a Firebase config");return;}
+  localStorage.setItem(FB_KEY,JSON.stringify(cfg));
+  await cloudInit(cfg); renderSyncUI(); toast("Connected — now sign in");
+}
+async function onSignIn(){
+  const email=document.getElementById("fbEmail").value.trim(),pass=document.getElementById("fbPass").value;
+  if(!email||!pass){toast("Enter email and password");return;}
+  try{setStatus("connecting");await cloud._auth.signInWithEmailAndPassword(cloud.auth,email,pass);toast("Signed in — syncing");}
+  catch(e){setStatus("signedout");toast(authMsg(e));}
+}
+async function onSignUp(){
+  const email=document.getElementById("fbEmail").value.trim(),pass=document.getElementById("fbPass").value;
+  if(!email||pass.length<6){toast("Use an email and a password of 6+ characters");return;}
+  try{setStatus("connecting");await cloud._auth.createUserWithEmailAndPassword(cloud.auth,email,pass);toast("Account created — syncing");}
+  catch(e){setStatus("signedout");toast(authMsg(e));}
+}
+async function onSignOut(){try{await cloud._auth.signOut(cloud.auth);toast("Signed out on this device");}catch(e){}}
+function onDisconnect(){
+  if(!confirm("Disconnect this Firebase project from this device? Your entries stay saved locally; they just stop syncing until you reconnect."))return;
+  detachCloud();try{if(cloud.auth&&cloud._auth)cloud._auth.signOut(cloud.auth);}catch(e){}
+  localStorage.removeItem(FB_KEY);cloud.enabled=false;cloud.ready=false;cloud.uid=null;setStatus("local");renderSyncUI();
+}
+function authMsg(e){const c=(e&&e.code)||"";
+  if(c.includes("invalid-credential")||c.includes("wrong-password"))return "Wrong email or password";
+  if(c.includes("email-already-in-use"))return "That account exists — try Sign in";
+  if(c.includes("invalid-email"))return "That email doesn't look right";
+  if(c.includes("weak-password"))return "Password needs 6+ characters";
+  if(c.includes("network"))return "Network error — try again";
+  return "Couldn't sign in — check your details";}
+
+/* =========================================================
+   SCRIPTURE — tap a reference to read it
+   ========================================================= */
+const verseCache={};
+function attrRef(r){return r.replace(/'/g,"\\'");}
+function verseChips(arr){return arr.map(s=>`<span class="chip scr verse" onclick="openVerse('${attrRef(s)}')">${s}</span>`).join("");}
+function verseLine(str){return str.split("·").map(x=>x.trim()).filter(Boolean).map(x=>`<span class="verse" onclick="openVerse('${attrRef(x)}')">${x}</span>`).join(" ");}
+function normRef(ref){return (ref||"").replace(/[–—]/g,"-").replace(/\s+/g," ").trim();}
+function isPassage(r){return r.indexOf(":")===-1 && r.indexOf("-")!==-1;} /* multi-chapter span → link out */
+function gatewayUrl(r){return "https://www.biblegateway.com/passage/?search="+encodeURIComponent(r)+"&version=ESV";}
+function openVerse(ref){
+  const r=normRef(ref);
+  document.getElementById("verseRef").textContent=r;
+  document.getElementById("verseLink").href=gatewayUrl(r);
+  const box=document.getElementById("verseText"),trans=document.getElementById("verseTrans");
+  document.getElementById("verseModal").classList.add("show");document.body.style.overflow="hidden";
+  trans.textContent="";
+  if(isPassage(r)){box.innerHTML=`<p class="muted">This is a longer passage. Tap “Read the full passage” below to open ${esc(r)} in your browser.</p>`;return;}
+  if(verseCache[r]){return showVerse(verseCache[r]);}
+  try{const c=localStorage.getItem("verse_"+r);if(c){const j=JSON.parse(c);verseCache[r]=j;return showVerse(j);}}catch(e){}
+  box.innerHTML=`<p class="muted">Opening…</p>`;
+  fetch("https://bible-api.com/"+encodeURIComponent(r)+"?translation=web")
+    .then(res=>res.ok?res.json():Promise.reject())
+    .then(j=>{if(!j||!j.text)throw 0;verseCache[r]=j;try{localStorage.setItem("verse_"+r,JSON.stringify(j));}catch(e){}showVerse(j);})
+    .catch(()=>{box.innerHTML=`<p class="muted">Couldn’t load the text right now. Tap “Read the full passage” below to open ${esc(r)} in your browser.</p>`;});
+}
+function showVerse(j){
+  const parts=esc((j.text||"").trim()).split(/\n+/).filter(Boolean);
+  document.getElementById("verseText").innerHTML=parts.map(p=>`<p>${p}</p>`).join("")||`<p class="muted">No text returned.</p>`;
+  document.getElementById("verseTrans").textContent=j.translation_name||"World English Bible (public domain)";
+}
+function closeVerse(){document.getElementById("verseModal").classList.remove("show");document.body.style.overflow="";}
+
+/* =========================================================
+   TAB — indent / nest bullets & numbers in editors
+   ========================================================= */
+function selectionLI(){
+  const s=window.getSelection();if(!s||!s.rangeCount)return null;
+  let n=s.anchorNode;while(n&&n!==document){if(n.nodeType===1&&n.tagName==="LI")return n;n=n.parentNode;}return null;
+}
+function handleTab(e){
+  if(e.key!=="Tab")return;
+  const t=e.target;
+  if(t&&t.classList&&t.classList.contains("editor")){
+    e.preventDefault();
+    if(e.shiftKey){document.execCommand("outdent");}
+    else if(selectionLI()){document.execCommand("indent");}       /* nest the bullet / number */
+    else{document.execCommand("insertText",false,"    ");} /* indent plain text */
+  }else if(t&&t.id==="e_surrender"){
+    e.preventDefault();
+    const s=t.selectionStart,en=t.selectionEnd;
+    t.value=t.value.slice(0,s)+"\t"+t.value.slice(en);
+    t.selectionStart=t.selectionEnd=s+1;
+  }
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+function boot(){
+  document.getElementById("topDate").textContent=new Date().toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"});
+  buildNav();buildToolbar();initCollectionFilters();loadSettingsUI();renderToday();renderSyncUI();
+  document.getElementById("entryModal").addEventListener("click",e=>{if(e.target.id==="entryModal")closeEntry();});
+  document.getElementById("verseModal").addEventListener("click",e=>{if(e.target.id==="verseModal")closeVerse();});
+  document.addEventListener("keydown",handleTab,true);
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeVerse();}});
+  const cfg=getFbConfig();
+  if(cfg){cloudInit(cfg,true);} else {setStatus("local");}
+}
+boot();
+</script>
+</body>
+</html>
